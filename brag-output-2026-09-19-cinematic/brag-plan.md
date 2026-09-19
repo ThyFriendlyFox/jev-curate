@@ -6,22 +6,21 @@ Second cut of the jev-curate brag. Same product, same real figures, a different 
 jev-curate runs pass/fail gates from a YAML rubric over every training row with TypeSafe Jev, keeps the rows that pass every gate, and writes an audit trail for the rest.
 
 ## The angle
-Numbers first. The example run keeps 3 of 10 rows. The video states that in three slams, shows the row that fails hardest with the CLI's own rejection reason, runs the documented command, and lands the totals as hero figures.
+Showcase the repository, in the first cut's order and this cut's look. Open on the one broken row the example corpus ships with, run the documented command, let the tool reject the row with its own reason strings, print the CLI's real results table, and end on the rule.
 
 ## Hook (first 2-3 seconds)
-Three condensed lines slam in on the intro: "TEN ROWS." · "THREE PASS." · "SEVEN DO NOT."
+The t006 record slides in. Condensed display: "THIS ROW IS LABELED BILLING." Then the line the human asked to keep: "It is about to be training data."
 
 ## Key moments (the middle)
-- Row t006 as a full-width record, then a red REJECTED stamp and the audit's two real reason strings: `transcript_valid: yes=0.043 < min_yes=0.75`, `label_plausible: yes=0.065 < min_yes=0.7`.
-- The README quick-start command typed fast, Enter on the beat, the CLI header line.
-- `audit.jsonl` filling in two columns, one record every beat at 120 BPM.
-- Hero figures: 3 kept, 7 rejected, 30.0% keep rate, then the four output files with their counts.
+- The README quick-start command typed fast, Enter, the CLI header line, and `audit.jsonl` filling in two columns, one record every 0.5 s.
+- The verdict: row t006 back as a full-width record, a red REJECTED stamp, and the audit's two real reason strings: `transcript_valid: yes=0.043 < min_yes=0.75`, `label_plausible: yes=0.065 < min_yes=0.7`.
+- The CLI's own Rich tables (Curation results and Top reject gates) printing line by line, with the four output files and their counts beside them.
 
 ## Outro / punchline
 "JEV FILTERS." · "IT DOES NOT LABEL." (invariant 2 from agent-kit/AGENTS.md), then `$ jev-curate` and the repo URL.
 
 ## User flow worth showing
-Row in the corpus → `jev-curate run …` → `audit.jsonl` → totals → 4 output files. Scenes 2 to 4.
+Row in the corpus → `jev-curate run …` → `audit.jsonl` → the row's verdict → the results table and 4 output files. Scenes 1 to 4.
 
 ## Tone
 - Preset: cinematic
@@ -47,8 +46,8 @@ Ten rows in. Three out. jev-curate runs pass/fail gates on every training row wi
 ## Audio direction
 - Role: no music. A generated sub-drone (`composition/scripts/gen_drone.py` → `assets/drone.wav`) with pitch-drop thumps on every cut and slam, a slow swell under the run scene, and silence-shaped SFX on top.
 - Music: none. The bundled ende.app tracks were tried (vol-1) and cut at the human's request: the upbeat corporate bed did not fit the register.
-- Bed treatment: volume 0.8, fade in 0 to 0.5s, fade out 23.6 to 24.5s. Thumps at 0.3, 1.5, 2.6, 4.02, 5.53, 9.02, 11.52, 16.52, 17.02, 17.52, 18.02, 20.52, 21.01, 22.01, 23.02.
-- Music cue guidance: none; the cut keeps its own 0.5 s grid (120 BPM feel). Scene cuts on 4.02, 9.02, 16.52, 20.52. Audit lines every 0.5 s from 12.02 to 16.52; figures at 17.02, 17.52, 18.02; file rows on 18.52, 19.02, 19.52, 20.02; outro lines at 21.01, 22.01, 23.02.
+- Bed treatment: volume 0.8, fade in 0 to 0.5s, fade out 23.6 to 24.5s. Thumps at 0.25, 1.15, 2.7, 5.0, 7.5, 13.5, 13.9, 17.0, 18.5, 19.0, 19.5, 20.0, 21.5, 21.9, 22.9, 23.5.
+- Music cue guidance: none; the cut keeps its own 0.5 s grid (120 BPM feel). Scene cuts on 5.0, 13.5, 17.0, 21.5. Audit lines every 0.5 s from 8.0 to 12.5; stamp at 13.9; table from 17.15; file rows on 18.5, 19.0, 19.5, 20.0; outro lines at 21.9, 22.9, 23.5.
 - Audio-reactive treatment: the thumps drive the gold light's intensity, the grid's brightness and the square marks; the drone's RMS drives the vignette. Text scale stays fixed.
 - SFX posture: moderate, motion-matched
 - Audio-coupled moments: slams (soft impacts), stamp (bell), typing ticks, Enter click, audit-line clicks, figure landings (punch), outro lines (bells)
@@ -56,44 +55,41 @@ Ten rows in. Three out. jev-curate runs pass/fail gates on every training row wi
 
 ## Storyboard
 
-### Scene 1 — Three slams — 4.02s (0.00–4.02)
-Navy-black ground with a faint gold data grid. "TEN ROWS." slams in at 0.3 (scale + blur). "THREE PASS." snaps in from the left at 1.5, gold. "SEVEN DO NOT." rises with a rotation at 2.6. Hold; gentle breathe.
-Sequential/interaction: yes, three phrases with three distinct entrances.
-Audio intent: three hits before the beat grid arrives.
-Audio-coupled idea: soft impact per slam.
-Music: drone only
+### Scene 1 — The row — 5.0s (0.00–5.00)
+Kicker "■ EXAMPLES/CORPUS.JSONL · LINE 6". The t006 record panel slides up on the right at 0.25. Display headline on the left, word by word from 1.15: "THIS ROW IS LABELED BILLING." with "billing." in gold. At 2.7 the mono subline: "It is about to be training data."
+Sequential/interaction: yes, panel, then five words, then the subline.
+Audio intent: a thump on the panel, a thump on the subline.
+Audio-coupled idea: soft impacts on both.
 Transition mood: hard → Scene 2
 
-### Scene 2 — The row — 5.0s (4.02–9.02)
-Hard cut on the beat. Kicker "■ EXAMPLES/CORPUS.JSONL · T006". A full-width record panel shows the t006 row in large mono, "billing" in gold. At 5.53 a red REJECTED stamp slams in, rotated. At 6.03 and 6.52 the two real reason lines print in red under the record.
-Sequential/interaction: yes, stamp then two reason lines.
-Audio intent: the stamp is the first big hit.
-Audio-coupled idea: bell on the stamp; soft clicks on the reason lines.
+### Scene 2 — The run — 8.5s (5.00–13.50)
+Hard cut. Terminal panel on top: the README command types 5.10 to 7.22, Enter at 7.5, the CLI header prints. Panel below: `.output/run1/audit.jsonl`, 10 records in two columns landing every 0.5 s from 8.0 to 12.5, kept teal, rejected red, running tally in the bar.
+Sequential/interaction: yes, typing, Enter, 10 lines.
+Audio intent: the drone swells under the run.
+Audio-coupled idea: keypress ticks, Enter click, click per audit line.
 Transition mood: hard → Scene 3
 
-### Scene 3 — The run — 7.5s (9.02–16.52)
-Hard cut. Terminal panel on top: the README command types 9.10 to 11.22, Enter at 11.52, the CLI header prints. Panel below: `.output/run1/audit.jsonl`, 10 records in two columns landing one per beat 12.02 to 16.52, kept teal, rejected red, running tally in the bar.
-Sequential/interaction: yes, typing, Enter, 10 lines.
-Audio intent: the pulse.
-Audio-coupled idea: keypress ticks, Enter click, click per audit line.
+### Scene 3 — The verdict — 3.5s (13.50–17.00)
+Hard cut, the swell drops. Kicker "■ AUDIT.JSONL · T006". The t006 record full width. At 13.9 the red REJECTED stamp slams in, rotated. At 14.4 and 14.9 the two real reason lines print in red.
+Sequential/interaction: yes, stamp then two lines.
+Audio intent: the big hit.
+Audio-coupled idea: bell on the stamp, clicks on the lines.
 Transition mood: hard → Scene 4
 
-### Scene 4 — The numbers — 4.0s (16.52–20.52)
-Hard cut. Three figure lockups: 3 KEPT (gold), 7 REJECTED, 30.0% KEEP RATE, counting up from 17.02, 17.52, 18.02. Below, four mono rows arrive on the beat 18.52 to 20.02: curated.jsonl 3 rows · rejected.jsonl 7 rows · audit.jsonl 10 rows · errors.jsonl 0 rows.
-Sequential/interaction: yes, three counters then four rows.
-Audio intent: three punches, four ticks.
-Audio-coupled idea: punch per figure, soft impact per row.
+### Scene 4 — The results — 4.5s (17.00–21.50)
+Hard cut. Kicker "■ CURATION RESULTS · .OUTPUT/RUN1". Terminal panel on the left prints the CLI's two Rich tables line by line from 17.15; the Keep rate row highlights at 18.4. Right column: four file rows arrive at 18.5, 19.0, 19.5, 20.0: curated.jsonl 3 rows, rejected.jsonl 7 rows, audit.jsonl 10 rows, errors.jsonl 0 rows, each with its README description.
+Sequential/interaction: yes, table print then four rows.
+Audio intent: a punch on the cut, soft impacts on the rows.
 Transition mood: hard → Scene 5
 
-### Scene 5 — The rule — 3.98s (20.52–24.50)
-Hard cut. "JEV FILTERS." slams at 21.01. "IT DOES NOT LABEL." snaps in gold at 22.01. `$ jev-curate` and github.com/ThyFriendlyFox/jev-curate rise at 23.02. Music fades under the last bell.
+### Scene 5 — The rule — 3.0s (21.50–24.50)
+Hard cut. "JEV FILTERS." slams at 21.9. "IT DOES NOT LABEL." snaps in gold at 22.9. `$ jev-curate` and the repo URL rise at 23.5. The drone fades under the last bell.
 Sequential/interaction: yes, two lines then the mark.
 Audio intent: two bells, then quiet.
-Audio-coupled idea: bell at 21.01 and 23.02.
 Transition mood: hold to end
 
 **Music mood for this video:** none; a dark sub-drone.
-**Audio summary:** three thumps in the intro, the drone swells under the run and drops on the cut, three punches for the figures, two bells to close.
+**Audio summary:** two thumps under the hook, the drone swells under the run and drops on the verdict, a bell on the stamp, a punch on the results, two bells to close.
 
 ## Provenance of figures
 Every number and output line comes from `jev-curate run --mock --rubric examples/rubric.yaml --input examples/corpus.jsonl` on the shipped example corpus (the mock is the repo's test fixture). The terminal header is the live-mode string the CLI prints when `TYPESAFE_API_KEY` is set. Reason strings are the audit's `reason` fields, verbatim.

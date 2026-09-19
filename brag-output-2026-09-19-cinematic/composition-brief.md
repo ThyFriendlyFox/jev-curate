@@ -14,20 +14,21 @@ Create a short cinematic brag video for jev-curate, a second cut in a different 
 - Primary files read: README.md, examples/corpus.jsonl, examples/rubric.yaml, src/jev_curate/cli.py, agent-kit/AGENTS.md; run output from `jev-curate run --mock` on the example corpus
 - Product name: jev-curate
 - Tagline / strongest claim: "Jev filters; it does not label." (AGENTS.md invariant 2)
-- Key UI or visual moment to recreate: the t006 record with its audit reasons; the terminal run; the results as hero figures
+- Key UI or visual moment to recreate: the t006 record; the terminal run; the record with its audit reasons; the CLI's Rich tables and the 4 output files
 - Copy that must appear verbatim:
   - the t006 row
   - `transcript_valid: yes=0.043 < min_yes=0.75` and `label_plausible: yes=0.065 < min_yes=0.7`
   - `jev-curate run --rubric examples/rubric.yaml --input examples/corpus.jsonl --output .output/run1`
   - `jev-curate rubric='training_example_curation' model=jev-latest mode=live (TypeSafe Jev) concurrency=1`
-  - curated.jsonl 3 · rejected.jsonl 7 · audit.jsonl 10 · errors.jsonl 0 · keep rate 30.0%
+  - the Curation results and Top reject gates tables as the CLI prints them
+  - curated.jsonl 3 · rejected.jsonl 7 · audit.jsonl 10 · errors.jsonl 0
 
 ## Creative Direction
 - Tone preset: cinematic
 - Creative direction: a trailer for a filter
 - Interpretation: hard cuts on beats, scale-slam and side-snap entrances, 300px+ condensed display, gold as the one accent, red only for rejection
-- Angle: numbers first, then the row that fails, then the run, then the totals
-- Hook: "TEN ROWS." / "THREE PASS." / "SEVEN DO NOT."
+- Angle: showcase the repository in the first cut's order: the row, the run, the verdict, the results table and the 4 files, the rule
+- Hook: the t006 record + "This row is labeled billing." / "It is about to be training data."
 - Outro / punchline: "JEV FILTERS." / "IT DOES NOT LABEL."
 - Avoid: generic SaaS language, abstract filler, any CLI output the CLI does not print, bouncy eases
 
@@ -39,7 +40,7 @@ Create a short cinematic brag video for jev-curate, a second cut in a different 
 - Body font: Inter; code: IBM Plex Mono (bundled)
 
 ## Storyboard
-Use `brag-plan.md` as the creative contract. 1. Three slams 4.02s · 2. The row 5.0s · 3. The run 7.5s · 4. The numbers 4.0s · 5. The rule 3.98s.
+Use `brag-plan.md` as the creative contract. 1. The row 5.0s · 2. The run 8.5s · 3. The verdict 3.5s · 4. The results 4.5s · 5. The rule 3.0s.
 
 ## Audio
 - Music: none. Bed is a generated sub-drone `assets/drone.wav` (`scripts/gen_drone.py`), data-volume 0.8, lane fade-in 0→0.5, fade-out 23.6→24.5

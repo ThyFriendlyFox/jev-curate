@@ -88,3 +88,9 @@ Evidence: `brag-output-2026-09-19-cinematic/brag.mp4` (735 frames, 1920x1080, 24
 The human liked the cinematic cut but not its music. The `/brag` skill bundles 5 tracks from one upbeat corporate series, and none fits a dark trailer register. I removed the music and generated a bed instead: `composition/scripts/gen_drone.py` writes `assets/drone.wav`, a detuned 55 Hz sub-drone with a slow swell under the run scene and pitch-drop thumps on every cut and slam. The SFX layer is unchanged. The gold light and grid now pulse on the thumps. The bed is generated code, so it is committed; no third-party music remains in that folder.
 
 Evidence: `brag-output-2026-09-19-cinematic/brag.mp4` re-rendered, `npx hyperframes check` green.
+
+## 2026-09-19 — Cinematic cut restructured to showcase the repository
+
+The human said the format should showcase the repository and named the first cut's hook as the one they love. I rebuilt the cinematic cut's storyboard in the first cut's order and kept its look: the t006 record with "This row is labeled billing. It is about to be training data.", the typed command and `audit.jsonl`, the row's verdict with the REJECTED stamp and the 2 real reason strings, the CLI's 2 Rich tables with the 4 output files beside them, then "Jev filters. It does not label." The drone bed and SFX were re-timed to the new cuts. 2 layout findings on the first check (a headline box touching the subline; the 2 tables overrunning their panel) were fixed by spacing and type size. `npx hyperframes check` then passed with 0 errors and 301/301 contrast checks.
+
+Evidence: `brag-output-2026-09-19-cinematic/brag.mp4` (735 frames, 24.5 s), `brag-output-2026-09-19-cinematic/brag-plan.md`.
