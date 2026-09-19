@@ -8,6 +8,7 @@
     <script src="assets/audio-data.js"></script>
     <script src="assets/typing-schedule.js"></script>
     <style>
+      /* Type floor: no text below 36px. When copy does not fit, it gets its own scene. */
       :root {
         --bg: #000814;
         --panel: #001d3d;
@@ -92,19 +93,20 @@
         position: absolute;
         left: 80px;
         right: 80px;
-        top: 1008px;
+        top: 1000px;
         display: flex;
         justify-content: space-between;
         font-family: var(--mono);
-        font-size: 22px;
-        letter-spacing: 0.04em;
+        font-size: 36px;
+        line-height: 1;
+        letter-spacing: 0.02em;
         color: var(--muted);
       }
       .footer .line {
         position: absolute;
         left: 0;
         right: 0;
-        top: -18px;
+        top: -22px;
         height: 1px;
         background: var(--gold-16);
         transform-origin: left center;
@@ -114,20 +116,21 @@
       .kicker {
         position: absolute;
         left: 80px;
-        top: 76px;
+        top: 64px;
         display: flex;
         align-items: center;
-        gap: 18px;
+        gap: 22px;
         font-family: var(--mono);
-        font-size: 24px;
-        letter-spacing: 0.22em;
+        font-size: 36px;
+        line-height: 1;
+        letter-spacing: 0.16em;
         text-transform: uppercase;
         color: var(--gold);
       }
       .sq {
         display: inline-block;
-        width: 18px;
-        height: 18px;
+        width: 24px;
+        height: 24px;
         background: var(--gold);
         transform-origin: 50% 50%;
       }
@@ -141,23 +144,25 @@
         overflow: hidden;
       }
       .panel .bar {
-        height: 52px;
+        height: 68px;
         display: flex;
         align-items: center;
-        gap: 16px;
-        padding: 0 24px;
+        gap: 24px;
+        padding: 0 28px;
         border-bottom: 1px solid var(--gold-16);
         font-family: var(--mono);
-        font-size: 22px;
-        letter-spacing: 0.06em;
+        font-size: 36px;
+        letter-spacing: 0.02em;
         color: var(--muted);
       }
       .panel .bar .title {
         flex: 1;
       }
       .panel .body {
-        padding: 28px 32px;
+        padding: 26px 32px;
         font-family: var(--mono);
+        font-size: 36px;
+        line-height: 52px;
         overflow-wrap: anywhere;
       }
       .pre,
@@ -198,12 +203,32 @@
         opacity: 0;
         will-change: transform;
       }
+      .side {
+        position: absolute;
+        left: 1180px;
+        top: 230px;
+        width: 660px;
+      }
+      .side .big {
+        font-family: var(--display);
+        font-size: 220px;
+        line-height: 1;
+        text-transform: uppercase;
+        color: var(--text);
+        opacity: 0;
+      }
+      .side .big.gold {
+        color: var(--gold);
+      }
+      .side .big.dim {
+        color: var(--muted);
+      }
 
       /* ---------- scene 1: the row ---------- */
       #s1 .headline {
         position: absolute;
         left: 80px;
-        top: 220px;
+        top: 210px;
         width: 840px;
         font-family: var(--display);
         font-size: 168px;
@@ -222,36 +247,34 @@
       #s1 .sub {
         position: absolute;
         left: 84px;
-        top: 800px;
-        width: 840px;
+        top: 780px;
+        width: 860px;
         font-family: var(--mono);
-        font-size: 36px;
-        line-height: 1.4;
+        font-size: 44px;
+        line-height: 1.3;
         color: var(--muted);
         opacity: 0;
       }
       #s1-rec {
         left: 980px;
-        top: 300px;
+        top: 230px;
         width: 860px;
       }
       #s1-rec .body {
-        font-size: 27px;
-        line-height: 1.55;
-        padding: 30px 36px 36px;
+        padding: 26px 36px 30px;
       }
 
-      /* ---------- scene 2: the run ---------- */
+      /* ---------- scene 2: the command ---------- */
       #term {
         left: 80px;
-        top: 170px;
+        top: 180px;
         width: 1760px;
-        height: 340px;
+        height: 620px;
       }
       #term .body {
-        font-size: 26px;
-        line-height: 36px;
-        padding: 22px 32px;
+        font-size: 40px;
+        line-height: 58px;
+        padding: 26px 32px;
       }
       .cmdline .c {
         opacity: 0;
@@ -261,52 +284,47 @@
       }
       .caret {
         display: inline-block;
-        width: 14px;
-        height: 28px;
-        vertical-align: -5px;
+        width: 20px;
+        height: 40px;
+        vertical-align: -7px;
         background: var(--gold);
         opacity: 0;
       }
       .out {
         opacity: 0;
       }
-      #audit {
+
+      /* ---------- scenes 3 + 4: audit.jsonl ---------- */
+      .auditp {
         left: 80px;
-        top: 540px;
+        top: 180px;
         width: 1760px;
-        height: 440px;
+        height: 780px;
       }
-      #alines {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        column-gap: 40px;
-        row-gap: 8px;
-        font-size: 21px;
-        line-height: 30px;
-      }
-      .aline {
+      .alines .aline {
+        margin-bottom: 14px;
         opacity: 0;
       }
 
-      /* ---------- scene 3: the verdict ---------- */
+      /* ---------- scene 5: the verdict ---------- */
       #rec {
         left: 80px;
-        top: 170px;
+        top: 180px;
         width: 1760px;
-        height: 520px;
+        height: 500px;
       }
       #rec .body {
         font-size: 40px;
-        line-height: 1.45;
-        padding: 34px 40px;
+        line-height: 58px;
+        padding: 26px 36px;
       }
       #reasons {
         position: absolute;
         left: 80px;
-        top: 740px;
+        top: 730px;
         width: 1760px;
         font-family: var(--mono);
-        font-size: 34px;
+        font-size: 40px;
         line-height: 1.6;
       }
       .reason {
@@ -319,7 +337,7 @@
       #stamp {
         position: absolute;
         left: 1130px;
-        top: 440px;
+        top: 430px;
         padding: 6px 40px 0;
         border: 8px solid var(--rej);
         font-family: var(--display);
@@ -332,29 +350,29 @@
         will-change: transform;
       }
 
-      /* ---------- scene 4: the results ---------- */
-      #results {
+      /* ---------- scenes 6 + 7: the tables ---------- */
+      .tablep {
         left: 80px;
-        top: 170px;
-        width: 1000px;
-        height: 810px;
+        top: 180px;
+        width: 1040px;
+        height: 780px;
       }
-      #results .body {
-        font-size: 22px;
-        line-height: 31px;
-        padding: 18px 32px;
+      .tablep .body {
+        padding: 24px 32px;
       }
       #keeprate {
         border-radius: 4px;
       }
+
+      /* ---------- scene 8: four files ---------- */
       .files {
         position: absolute;
-        left: 1120px;
-        top: 170px;
-        width: 720px;
+        left: 80px;
+        top: 176px;
+        width: 1760px;
       }
       .frow {
-        padding: 26px 0 24px;
+        padding: 22px 0 20px;
         border-top: 1px solid var(--gold-40);
         opacity: 0;
       }
@@ -363,53 +381,54 @@
         justify-content: space-between;
         align-items: baseline;
         font-family: var(--mono);
-        font-size: 32px;
+        font-size: 48px;
+        line-height: 1.1;
       }
       .frow .fc {
         color: var(--gold);
       }
       .frow .fd {
-        margin-top: 10px;
+        margin-top: 8px;
         font-family: var(--sans);
-        font-size: 24px;
-        line-height: 1.4;
+        font-size: 36px;
+        line-height: 1.3;
         color: var(--muted);
       }
 
-      /* ---------- scene 5: the rule ---------- */
-      #s5 .stack {
+      /* ---------- scene 9: the rule ---------- */
+      #s9 .stack {
         position: absolute;
         left: 80px;
         top: 170px;
         width: 1760px;
       }
-      #s5 .slam {
+      #s9 .slam {
         font-size: 290px;
       }
-      #s5 .gold {
+      #s9 .gold {
         color: var(--gold);
       }
-      #s5 .mark {
+      #s9 .mark {
         position: absolute;
         left: 80px;
-        top: 830px;
+        top: 820px;
         display: flex;
         align-items: baseline;
-        gap: 40px;
+        gap: 48px;
         font-family: var(--mono);
         opacity: 0;
       }
-      #s5 .mark .cmd {
-        font-size: 64px;
+      #s9 .mark .cmd {
+        font-size: 72px;
         font-weight: 700;
         color: var(--text);
       }
-      #s5 .mark .cmd .prompt {
+      #s9 .mark .cmd .prompt {
         font-weight: 400;
       }
-      #s5 .mark .url {
-        font-size: 26px;
-        letter-spacing: 0.04em;
+      #s9 .mark .url {
+        font-size: 36px;
+        letter-spacing: 0.02em;
         color: var(--muted);
       }
     </style>
@@ -421,7 +440,7 @@
       data-start="0"
       data-width="1920"
       data-height="1080"
-      data-duration="24.5"
+      data-duration="35"
     >
       <div id="bg" class="bg" data-layout-ignore>
         <div id="grid" class="grid"></div>
@@ -431,11 +450,11 @@
       </div>
       <div id="footer" class="footer">
         <div class="line" id="footer-line"></div>
-        <span>jev-curate · pattern #1 · data curation</span><span>github.com/ThyFriendlyFox/jev-curate</span>
+        <span>jev-curate · data curation</span><span>github.com/ThyFriendlyFox/jev-curate</span>
       </div>
 
-      <!-- Scene 1 — the row (0–5.0) -->
-      <section id="s1" class="clip" data-start="0" data-duration="5" data-track-index="1">
+      <!-- Scene 1 — the row (0–5.5) -->
+      <section id="s1" class="clip" data-start="0" data-duration="5.5" data-track-index="1">
         <div class="stage" id="s1-stage">
           <div class="kicker" id="s1-kicker"><span class="sq"></span><span>examples/corpus.jsonl · line 6</span></div>
           <h1 class="headline" id="s1-headline">
@@ -445,7 +464,7 @@
           <p class="sub" id="s1-sub">It is about to be training data.</p>
           <div id="s1-recwrap">
             <div class="panel" id="s1-rec">
-              <div class="bar"><span class="title">examples/corpus.jsonl</span><span>jsonl</span></div>
+              <div class="bar"><span class="title">examples/corpus.jsonl</span></div>
               <div class="body pre">{
   <span class="k">"id"</span>: <span class="g">"t006"</span>,
   <span class="k">"text"</span>: "[garbled hallucinated transcript] the the the subscription music playing silence",
@@ -456,8 +475,8 @@
         </div>
       </section>
 
-      <!-- Scene 2 — the run (5.0–13.5) -->
-      <section id="s2" class="clip" data-start="5" data-duration="8.5" data-track-index="2">
+      <!-- Scene 2 — the command (5.5–10.5) -->
+      <section id="s2" class="clip" data-start="5.5" data-duration="5" data-track-index="2">
         <div class="stage" id="s2-stage">
           <div class="kicker" id="s2-kicker"><span class="sq"></span><span>quick start · live Jev by default</span></div>
           <div class="panel" id="term">
@@ -467,17 +486,35 @@
               <div class="out" id="hdr"><span class="bold">jev-curate</span> rubric=<span class="g">'training_example_curation'</span> model=jev-latest mode=live (TypeSafe Jev) concurrency=1</div>
             </div>
           </div>
-          <div class="panel" id="audit">
-            <div class="bar"><span class="title">.output/run1/audit.jsonl</span><span id="tally">0 kept · 0 rejected</span></div>
-            <div class="body"><div id="alines"></div></div>
+        </div>
+      </section>
+
+      <!-- Scene 3 — audit.jsonl, rows 1–5 (10.5–14.0) -->
+      <section id="s3" class="clip" data-start="10.5" data-duration="3.5" data-track-index="3">
+        <div class="stage" id="s3-stage">
+          <div class="kicker" id="s3-kicker"><span class="sq"></span><span>one line per evaluated row</span></div>
+          <div class="panel auditp" id="audit-a">
+            <div class="bar"><span class="title">.output/run1/audit.jsonl</span><span id="tally-a">0 kept · 0 rejected</span></div>
+            <div class="body alines" id="alines-a"></div>
           </div>
         </div>
       </section>
 
-      <!-- Scene 3 — the verdict (13.5–17.0) -->
-      <section id="s3" class="clip" data-start="13.5" data-duration="3.5" data-track-index="3">
-        <div class="stage" id="s3-stage">
-          <div class="kicker" id="s3-kicker"><span class="sq"></span><span>audit.jsonl · t006</span></div>
+      <!-- Scene 4 — audit.jsonl, rows 6–10 (14.0–17.5) -->
+      <section id="s4" class="clip" data-start="14" data-duration="3.5" data-track-index="4">
+        <div class="stage" id="s4-stage">
+          <div class="kicker" id="s4-kicker"><span class="sq"></span><span>one line per evaluated row</span></div>
+          <div class="panel auditp" id="audit-b">
+            <div class="bar"><span class="title">.output/run1/audit.jsonl</span><span id="tally-b">2 kept · 3 rejected</span></div>
+            <div class="body alines" id="alines-b"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Scene 5 — the verdict (17.5–21.0) -->
+      <section id="s5" class="clip" data-start="17.5" data-duration="3.5" data-track-index="5">
+        <div class="stage" id="s5-stage">
+          <div class="kicker" id="s5-kicker"><span class="sq"></span><span>audit.jsonl · t006</span></div>
           <div class="panel" id="rec">
             <div class="bar"><span class="title">examples/corpus.jsonl</span><span>line 6</span></div>
             <div class="body pre">{
@@ -494,11 +531,11 @@
         </div>
       </section>
 
-      <!-- Scene 4 — the results (17.0–21.5) -->
-      <section id="s4" class="clip" data-start="17" data-duration="4.5" data-track-index="4">
-        <div class="stage" id="s4-stage">
-          <div class="kicker" id="s4-kicker"><span class="sq"></span><span>curation results · .output/run1</span></div>
-          <div class="panel" id="results">
+      <!-- Scene 6 — curation results (21.0–24.5) -->
+      <section id="s6" class="clip" data-start="21" data-duration="3.5" data-track-index="6">
+        <div class="stage" id="s6-stage">
+          <div class="kicker" id="s6-kicker"><span class="sq"></span><span>curation results · .output/run1</span></div>
+          <div class="panel tablep" id="table-a">
             <div class="bar"><span class="title">bash — jev-curate</span></div>
             <div class="body">
               <div class="tline bold">        Curation results        </div>
@@ -512,6 +549,22 @@
               <div class="tline"><span class="k">│</span> Errors               <span class="k">│</span>     <span class="g">0</span> <span class="k">│</span></div>
               <div class="tline" id="keeprate"><span class="k">│</span> Keep rate            <span class="k">│</span> <span class="g">30.0%</span> <span class="k">│</span></div>
               <div class="tline k">└──────────────────────┴───────┘</div>
+            </div>
+          </div>
+          <div class="side">
+            <div class="big gold" id="big-kept">3 kept.</div>
+            <div class="big dim" id="big-rej">7 rejected.</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Scene 7 — top reject gates (24.5–27.5) -->
+      <section id="s7" class="clip" data-start="24.5" data-duration="3" data-track-index="7">
+        <div class="stage" id="s7-stage">
+          <div class="kicker" id="s7-kicker"><span class="sq"></span><span>top reject gates · examples/rubric.yaml</span></div>
+          <div class="panel tablep" id="table-b">
+            <div class="bar"><span class="title">bash — jev-curate</span></div>
+            <div class="body">
               <div class="tline bold">         Top reject gates         </div>
               <div class="tline k">┏━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━┓</div>
               <div class="tline"><span class="k">┃</span> <span class="bold">Gate</span>                   <span class="k">┃</span> <span class="bold">Count</span> <span class="k">┃</span></div>
@@ -524,6 +577,17 @@
               <div class="tline k">└────────────────────────┴───────┘</div>
             </div>
           </div>
+          <div class="side">
+            <div class="big" id="big-gates">5 gates.</div>
+            <div class="big gold" id="big-rubric">1 rubric.</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Scene 8 — four files (27.5–31.5) -->
+      <section id="s8" class="clip" data-start="27.5" data-duration="4" data-track-index="8">
+        <div class="stage" id="s8-stage">
+          <div class="kicker" id="s8-kicker"><span class="sq"></span><span>output dir · .output/run1</span></div>
           <div class="files">
             <div class="frow" id="frow-1"><div class="top"><span class="fn">curated.jsonl</span><span class="fc">3 rows</span></div><div class="fd">Passed every required gate. Train on this.</div></div>
             <div class="frow" id="frow-2"><div class="top"><span class="fn">rejected.jsonl</span><span class="fc">7 rows</span></div><div class="fd">Failed rows with a _curation record: which gate, Jev probabilities.</div></div>
@@ -533,14 +597,14 @@
         </div>
       </section>
 
-      <!-- Scene 5 — the rule (21.5–24.5) -->
-      <section id="s5" class="clip" data-start="21.5" data-duration="3" data-track-index="5">
-        <div class="stage" id="s5-stage">
+      <!-- Scene 9 — the rule (31.5–35.0) -->
+      <section id="s9" class="clip" data-start="31.5" data-duration="3.5" data-track-index="9">
+        <div class="stage" id="s9-stage">
           <div class="stack">
             <div class="slam" id="q1">Jev filters.</div>
             <div class="slam gold" id="q2">It does not label.</div>
           </div>
-          <div class="mark" id="s5-mark">
+          <div class="mark" id="s9-mark">
             <span class="cmd"><span class="prompt">$ </span>jev-curate</span><span class="url">github.com/ThyFriendlyFox/jev-curate</span>
           </div>
         </div>
@@ -551,40 +615,48 @@
         id="bed"
         src="assets/drone.wav"
         data-start="0"
-        data-duration="24.5"
+        data-duration="35"
         data-track-index="10"
         data-volume="0.8"
-        data-automation='{"version":1,"lanes":[{"target":"volume","points":[{"t":0,"v":0},{"t":0.5,"v":1},{"t":23.6,"v":1},{"t":24.5,"v":0}]}]}'
+        data-automation='{"version":1,"lanes":[{"target":"volume","points":[{"t":0,"v":0},{"t":0.5,"v":1},{"t":34.1,"v":1},{"t":35,"v":0}]}]}'
       ></audio>
       <audio id="sfx-rec" src="assets/sfx/impact/impactSoft_medium_001.ogg" data-start="0.25" data-duration="0.4" data-track-index="14" data-volume="0.6"></audio>
       <audio id="sfx-sub" src="assets/sfx/impact/impactSoft_medium_003.ogg" data-start="2.7" data-duration="0.4" data-track-index="14" data-volume="0.55"></audio>
-      <audio id="sfx-cut2" src="assets/sfx/impact/impactSoft_medium_000.ogg" data-start="5" data-duration="0.4" data-track-index="14" data-volume="0.5"></audio>
-      <audio id="sfx-typing" src="assets/sfx/typing.wav" data-start="5.1" data-duration="2.75" data-track-index="11" data-volume="0.5"></audio>
-      <audio id="sfx-enter" src="assets/sfx/interface/click_003.ogg" data-start="7.5" data-duration="0.3" data-track-index="12" data-volume="0.55"></audio>
-      <!-- grid: audit lines every 0.5 s, 8.0 → 12.5 -->
-      <audio id="sfx-a1" src="assets/sfx/interface/click_002.ogg" data-start="8" data-duration="0.3" data-track-index="12" data-volume="0.32"></audio>
-      <audio id="sfx-a2" src="assets/sfx/interface/click_005.ogg" data-start="8.5" data-duration="0.3" data-track-index="13" data-volume="0.32"></audio>
-      <audio id="sfx-a3" src="assets/sfx/interface/click_002.ogg" data-start="9" data-duration="0.3" data-track-index="12" data-volume="0.32"></audio>
-      <audio id="sfx-a4" src="assets/sfx/interface/click_005.ogg" data-start="9.5" data-duration="0.3" data-track-index="13" data-volume="0.32"></audio>
-      <audio id="sfx-a5" src="assets/sfx/interface/click_002.ogg" data-start="10" data-duration="0.3" data-track-index="12" data-volume="0.32"></audio>
-      <audio id="sfx-a6" src="assets/sfx/interface/click_005.ogg" data-start="10.5" data-duration="0.3" data-track-index="13" data-volume="0.32"></audio>
-      <audio id="sfx-a7" src="assets/sfx/interface/click_002.ogg" data-start="11" data-duration="0.3" data-track-index="12" data-volume="0.32"></audio>
-      <audio id="sfx-a8" src="assets/sfx/interface/click_005.ogg" data-start="11.5" data-duration="0.3" data-track-index="13" data-volume="0.32"></audio>
-      <audio id="sfx-a9" src="assets/sfx/interface/click_002.ogg" data-start="12" data-duration="0.3" data-track-index="12" data-volume="0.32"></audio>
-      <audio id="sfx-a10" src="assets/sfx/interface/click_005.ogg" data-start="12.5" data-duration="0.3" data-track-index="13" data-volume="0.32"></audio>
-      <audio id="sfx-cut3" src="assets/sfx/impact/impactSoft_medium_002.ogg" data-start="13.5" data-duration="0.4" data-track-index="14" data-volume="0.5"></audio>
-      <audio id="sfx-stamp" src="assets/sfx/impact/impactBell_heavy_004.ogg" data-start="13.9" data-duration="1.6" data-track-index="16" data-volume="0.6"></audio>
-      <audio id="sfx-r1" src="assets/sfx/interface/click_003.ogg" data-start="14.4" data-duration="0.3" data-track-index="12" data-volume="0.45"></audio>
-      <audio id="sfx-r2" src="assets/sfx/interface/click_003.ogg" data-start="14.9" data-duration="0.3" data-track-index="12" data-volume="0.45"></audio>
-      <audio id="sfx-cut4" src="assets/sfx/impact/impactPunch_medium_000.ogg" data-start="17" data-duration="0.45" data-track-index="14" data-volume="0.55"></audio>
-      <audio id="sfx-w1" src="assets/sfx/impact/impactSoft_medium_000.ogg" data-start="18.5" data-duration="0.4" data-track-index="15" data-volume="0.45"></audio>
-      <audio id="sfx-w2" src="assets/sfx/impact/impactSoft_medium_001.ogg" data-start="19" data-duration="0.4" data-track-index="14" data-volume="0.45"></audio>
-      <audio id="sfx-w3" src="assets/sfx/impact/impactSoft_medium_002.ogg" data-start="19.5" data-duration="0.4" data-track-index="15" data-volume="0.45"></audio>
-      <audio id="sfx-w4" src="assets/sfx/impact/impactSoft_medium_003.ogg" data-start="20" data-duration="0.4" data-track-index="14" data-volume="0.45"></audio>
-      <audio id="sfx-cut5" src="assets/sfx/impact/impactSoft_medium_004.ogg" data-start="21.5" data-duration="0.4" data-track-index="15" data-volume="0.5"></audio>
-      <audio id="sfx-bell1" src="assets/sfx/impact/impactBell_heavy_000.ogg" data-start="21.9" data-duration="1.5" data-track-index="16" data-volume="0.55"></audio>
-      <audio id="sfx-snap2" src="assets/sfx/impact/impactSoft_medium_004.ogg" data-start="22.9" data-duration="0.4" data-track-index="14" data-volume="0.55"></audio>
-      <audio id="sfx-bell2" src="assets/sfx/impact/impactBell_heavy_003.ogg" data-start="23.5" data-duration="1" data-track-index="17" data-volume="0.5"></audio>
+      <audio id="sfx-cut2" src="assets/sfx/impact/impactSoft_medium_000.ogg" data-start="5.5" data-duration="0.4" data-track-index="14" data-volume="0.5"></audio>
+      <audio id="sfx-typing" src="assets/sfx/typing.wav" data-start="5.6" data-duration="2.75" data-track-index="11" data-volume="0.5"></audio>
+      <audio id="sfx-enter" src="assets/sfx/interface/click_003.ogg" data-start="8" data-duration="0.3" data-track-index="12" data-volume="0.55"></audio>
+      <audio id="sfx-cut3" src="assets/sfx/impact/impactSoft_medium_002.ogg" data-start="10.5" data-duration="0.4" data-track-index="14" data-volume="0.5"></audio>
+      <!-- grid: audit lines every 0.5 s, 11.0 → 13.0 and 14.5 → 16.5 -->
+      <audio id="sfx-a1" src="assets/sfx/interface/click_002.ogg" data-start="11" data-duration="0.3" data-track-index="12" data-volume="0.32"></audio>
+      <audio id="sfx-a2" src="assets/sfx/interface/click_005.ogg" data-start="11.5" data-duration="0.3" data-track-index="13" data-volume="0.32"></audio>
+      <audio id="sfx-a3" src="assets/sfx/interface/click_002.ogg" data-start="12" data-duration="0.3" data-track-index="12" data-volume="0.32"></audio>
+      <audio id="sfx-a4" src="assets/sfx/interface/click_005.ogg" data-start="12.5" data-duration="0.3" data-track-index="13" data-volume="0.32"></audio>
+      <audio id="sfx-a5" src="assets/sfx/interface/click_002.ogg" data-start="13" data-duration="0.3" data-track-index="12" data-volume="0.32"></audio>
+      <audio id="sfx-cut4" src="assets/sfx/impact/impactSoft_medium_004.ogg" data-start="14" data-duration="0.4" data-track-index="14" data-volume="0.5"></audio>
+      <audio id="sfx-a6" src="assets/sfx/interface/click_005.ogg" data-start="14.5" data-duration="0.3" data-track-index="13" data-volume="0.32"></audio>
+      <audio id="sfx-a7" src="assets/sfx/interface/click_002.ogg" data-start="15" data-duration="0.3" data-track-index="12" data-volume="0.32"></audio>
+      <audio id="sfx-a8" src="assets/sfx/interface/click_005.ogg" data-start="15.5" data-duration="0.3" data-track-index="13" data-volume="0.32"></audio>
+      <audio id="sfx-a9" src="assets/sfx/interface/click_002.ogg" data-start="16" data-duration="0.3" data-track-index="12" data-volume="0.32"></audio>
+      <audio id="sfx-a10" src="assets/sfx/interface/click_005.ogg" data-start="16.5" data-duration="0.3" data-track-index="13" data-volume="0.32"></audio>
+      <audio id="sfx-cut5" src="assets/sfx/impact/impactSoft_medium_002.ogg" data-start="17.5" data-duration="0.4" data-track-index="14" data-volume="0.5"></audio>
+      <audio id="sfx-stamp" src="assets/sfx/impact/impactBell_heavy_004.ogg" data-start="17.9" data-duration="1.6" data-track-index="16" data-volume="0.6"></audio>
+      <audio id="sfx-r1" src="assets/sfx/interface/click_003.ogg" data-start="18.4" data-duration="0.3" data-track-index="12" data-volume="0.45"></audio>
+      <audio id="sfx-r2" src="assets/sfx/interface/click_003.ogg" data-start="18.9" data-duration="0.3" data-track-index="12" data-volume="0.45"></audio>
+      <audio id="sfx-cut6" src="assets/sfx/impact/impactPunch_medium_000.ogg" data-start="21" data-duration="0.45" data-track-index="14" data-volume="0.55"></audio>
+      <audio id="sfx-big1" src="assets/sfx/impact/impactSoft_medium_001.ogg" data-start="22.2" data-duration="0.4" data-track-index="15" data-volume="0.5"></audio>
+      <audio id="sfx-big2" src="assets/sfx/impact/impactSoft_medium_003.ogg" data-start="22.8" data-duration="0.4" data-track-index="15" data-volume="0.5"></audio>
+      <audio id="sfx-cut7" src="assets/sfx/impact/impactPunch_medium_000.ogg" data-start="24.5" data-duration="0.45" data-track-index="14" data-volume="0.55"></audio>
+      <audio id="sfx-big3" src="assets/sfx/impact/impactSoft_medium_000.ogg" data-start="25.6" data-duration="0.4" data-track-index="15" data-volume="0.5"></audio>
+      <audio id="sfx-big4" src="assets/sfx/impact/impactSoft_medium_004.ogg" data-start="26.2" data-duration="0.4" data-track-index="15" data-volume="0.5"></audio>
+      <audio id="sfx-cut8" src="assets/sfx/impact/impactSoft_medium_002.ogg" data-start="27.5" data-duration="0.4" data-track-index="14" data-volume="0.5"></audio>
+      <audio id="sfx-w1" src="assets/sfx/impact/impactSoft_medium_000.ogg" data-start="28" data-duration="0.4" data-track-index="15" data-volume="0.45"></audio>
+      <audio id="sfx-w2" src="assets/sfx/impact/impactSoft_medium_001.ogg" data-start="28.5" data-duration="0.4" data-track-index="14" data-volume="0.45"></audio>
+      <audio id="sfx-w3" src="assets/sfx/impact/impactSoft_medium_002.ogg" data-start="29" data-duration="0.4" data-track-index="15" data-volume="0.45"></audio>
+      <audio id="sfx-w4" src="assets/sfx/impact/impactSoft_medium_003.ogg" data-start="29.5" data-duration="0.4" data-track-index="14" data-volume="0.45"></audio>
+      <audio id="sfx-cut9" src="assets/sfx/impact/impactSoft_medium_004.ogg" data-start="31.5" data-duration="0.4" data-track-index="15" data-volume="0.5"></audio>
+      <audio id="sfx-bell1" src="assets/sfx/impact/impactBell_heavy_000.ogg" data-start="31.9" data-duration="1.5" data-track-index="16" data-volume="0.55"></audio>
+      <audio id="sfx-snap2" src="assets/sfx/impact/impactSoft_medium_004.ogg" data-start="32.9" data-duration="0.4" data-track-index="14" data-volume="0.55"></audio>
+      <audio id="sfx-bell2" src="assets/sfx/impact/impactBell_heavy_003.ogg" data-start="33.5" data-duration="1.48" data-track-index="17" data-volume="0.5"></audio>
     </div>
 
     <script>
@@ -631,10 +703,11 @@
         ["t009", false, ["duplicate_substance"]],
         ["t010", false, ["is_ambiguous", "bucket_matches_content"]],
       ];
-      // grid: one record every 0.5 s, 8.0 → 12.5
-      var AUDIT_BEATS = [8, 8.5, 9, 9.5, 10, 10.5, 11, 11.5, 12, 12.5];
+      // grid: one record every 0.5 s; rows 1–5 on scene 3, rows 6–10 on scene 4
+      var AUDIT_BEATS = [11, 11.5, 12, 12.5, 13, 14.5, 15, 15.5, 16, 16.5];
       (function buildAudit() {
-        var host = document.getElementById("alines");
+        var a = document.getElementById("alines-a");
+        var b = document.getElementById("alines-b");
         AUDIT.forEach(function (rec, i) {
           var div = document.createElement("div");
           div.className = "aline";
@@ -646,19 +719,19 @@
             '{<span class="k">"id"</span>: "' + rec[0] + '", <span class="k">"kept"</span>: <span class="' +
             (rec[1] ? "ok" : "fail") + '">' + rec[1] + '</span>, <span class="k">"failed_gates"</span>: [' +
             gates.join(", ") + '], <span class="k">"gates"</span>: {…}}';
-          host.appendChild(div);
+          (i < 5 ? a : b).appendChild(div);
         });
       })();
 
       // ---------- timeline ----------
-      var DUR = 24.5;
+      var DUR = 35;
       var tl = gsap.timeline({ paused: true });
 
       // ground
       tl.fromTo("#footer-line", { scaleX: 0 }, { scaleX: 1, duration: 1.2, ease: "power2.out" }, 0.2);
       tl.fromTo("#footer", { opacity: 0 }, { opacity: 1, duration: 0.8, ease: "none" }, 0.5);
-      tl.fromTo("#ghost", { y: 0 }, { y: -60, duration: DUR, ease: "none" }, 0);
-      tl.fromTo("#grid", { x: 0, y: 0 }, { x: -120, y: -60, duration: DUR, ease: "none" }, 0);
+      tl.fromTo("#ghost", { y: 0 }, { y: -80, duration: DUR, ease: "none" }, 0);
+      tl.fromTo("#grid", { x: 0, y: 0 }, { x: -160, y: -80, duration: DUR, ease: "none" }, 0);
 
       // audio-reactive: the drone's thumps drive the gold light, grid and square marks; RMS breathes the vignette
       var lightEl = document.getElementById("light");
@@ -699,6 +772,14 @@
       function slamSide(sel, at) {
         tl.fromTo(sel, { x: -360, opacity: 0 }, { x: 0, opacity: 1, duration: 0.45, ease: "expo.out" }, at);
       }
+      function panelIn(sel, at, dy) {
+        tl.fromTo(sel, { y: dy, opacity: 0 }, { y: 0, opacity: 1, duration: 0.5, ease: "power3.out" }, at);
+      }
+      function printLines(sel, at) {
+        gsap.utils.toArray(sel).forEach(function (el, i) {
+          tl.set(el, { opacity: 1 }, at + i * 0.05);
+        });
+      }
       // waterfall word arrival: binary opacity via set, whip from below
       function waterfall(words, t0) {
         var F = 1 / 60;
@@ -713,20 +794,19 @@
         });
       }
 
-      // ================= Scene 1 — the row (0–5.0) =================
+      // ================= Scene 1 — the row (0–5.5) =================
       kicker("#s1-kicker", 0.15);
       tl.fromTo("#s1-recwrap", { y: 140, opacity: 0 }, { y: 0, opacity: 1, duration: 0.8, ease: "power3.out" }, 0.25);
-      tl.to("#s1-rec", { y: -7, duration: 1.7, ease: "sine.inOut", yoyo: true, repeat: Math.max(0, Math.floor((5 - 1.2) / 1.7) - 1) }, 1.2);
+      tl.to("#s1-rec", { y: -7, duration: 1.7, ease: "sine.inOut", yoyo: true, repeat: Math.max(0, Math.floor((5.5 - 1.2) / 1.7) - 1) }, 1.2);
       waterfall(gsap.utils.toArray("#s1-headline .w"), 1.15);
       tl.fromTo("#s1-sub", { opacity: 0, y: 26 }, { opacity: 1, y: 0, duration: 0.6, ease: "power2.out" }, 2.7);
 
-      // ================= Scene 2 — the run (5.0–13.5) =================
-      settle("#s2-stage", 5.0);
-      kicker("#s2-kicker", 5.1);
-      tl.fromTo("#term", { y: -40, opacity: 0 }, { y: 0, opacity: 1, duration: 0.5, ease: "power3.out" }, 5.0);
-      tl.fromTo("#audit", { y: 50, opacity: 0 }, { y: 0, opacity: 1, duration: 0.6, ease: "expo.out" }, 5.15);
+      // ================= Scene 2 — the command (5.5–10.5) =================
+      settle("#s2-stage", 5.5);
+      kicker("#s2-kicker", 5.6);
+      panelIn("#term", 5.5, -40);
       var lines = window.__cmdLines;
-      tl.set("#caret-0", { opacity: 1 }, 5.05);
+      tl.set("#caret-0", { opacity: 1 }, 5.55);
       TYPING_SCHEDULE.forEach(function (e) {
         var t = e[0], li = e[1], ci = e[2];
         if (ci === 0 && li > 0) {
@@ -736,13 +816,22 @@
         }
         tl.set(lines[li].chars[ci], { opacity: 1 }, t);
       });
-      // 7.5 Enter → header
-      tl.set("#caret-3", { opacity: 0 }, 7.5);
-      tl.set("#hdr", { opacity: 1 }, 7.53);
+      // 8.0 Enter → header
+      tl.set("#caret-3", { opacity: 0 }, 8.0);
+      tl.set("#hdr", { opacity: 1 }, 8.03);
+
+      // ================= Scenes 3 + 4 — audit.jsonl (10.5–17.5) =================
+      settle("#s3-stage", 10.5);
+      kicker("#s3-kicker", 10.6);
+      panelIn("#audit-a", 10.5, 50);
+      settle("#s4-stage", 14.0);
+      kicker("#s4-kicker", 14.1);
+      panelIn("#audit-b", 14.0, 50);
       AUDIT_BEATS.forEach(function (beat, i) {
         tl.set("#aline-" + i, { opacity: 1 }, beat);
       });
-      var tally = document.getElementById("tally");
+      var tallyA = document.getElementById("tally-a");
+      var tallyB = document.getElementById("tally-b");
       var tallyState = { t: 0 };
       tl.to(
         tallyState,
@@ -758,38 +847,52 @@
                 else r++;
               }
             }
-            tally.textContent = k + " kept · " + r + " rejected";
+            var s = k + " kept · " + r + " rejected";
+            tallyA.textContent = s;
+            tallyB.textContent = s;
           },
         },
         0,
       );
 
-      // ================= Scene 3 — the verdict (13.5–17.0) =================
-      settle("#s3-stage", 13.5);
-      kicker("#s3-kicker", 13.6);
-      tl.fromTo("#rec", { y: 60, opacity: 0 }, { y: 0, opacity: 1, duration: 0.5, ease: "power3.out" }, 13.5);
-      // 13.9 stamp
-      tl.fromTo("#stamp", { scale: 2.2, rotation: -2, opacity: 0 }, { scale: 1, rotation: -8, opacity: 1, duration: 0.35, ease: "power4.out" }, 13.9);
-      tl.set("#r1", { opacity: 1 }, 14.4);
-      tl.set("#r2", { opacity: 1 }, 14.9);
+      // ================= Scene 5 — the verdict (17.5–21.0) =================
+      settle("#s5-stage", 17.5);
+      kicker("#s5-kicker", 17.6);
+      panelIn("#rec", 17.5, 60);
+      // 17.9 stamp
+      tl.fromTo("#stamp", { scale: 2.2, rotation: -2, opacity: 0 }, { scale: 1, rotation: -8, opacity: 1, duration: 0.35, ease: "power4.out" }, 17.9);
+      tl.set("#r1", { opacity: 1 }, 18.4);
+      tl.set("#r2", { opacity: 1 }, 18.9);
 
-      // ================= Scene 4 — the results (17.0–21.5) =================
-      settle("#s4-stage", 17.0);
-      kicker("#s4-kicker", 17.1);
-      tl.fromTo("#results", { x: -40, opacity: 0 }, { x: 0, opacity: 1, duration: 0.5, ease: "power3.out" }, 17.0);
-      gsap.utils.toArray("#results .tline").forEach(function (el, i) {
-        tl.set(el, { opacity: 1 }, 17.15 + i * 0.05);
-      });
-      tl.fromTo("#keeprate", { backgroundColor: "rgba(255,195,0,0)" }, { backgroundColor: "rgba(255,195,0,0.14)", duration: 0.5, ease: "power2.out" }, 18.4);
-      [18.5, 19.0, 19.5, 20.0].forEach(function (beat, i) {
+      // ================= Scene 6 — curation results (21.0–24.5) =================
+      settle("#s6-stage", 21.0);
+      kicker("#s6-kicker", 21.1);
+      tl.fromTo("#table-a", { x: -40, opacity: 0 }, { x: 0, opacity: 1, duration: 0.5, ease: "power3.out" }, 21.0);
+      printLines("#table-a .tline", 21.15);
+      tl.fromTo("#keeprate", { backgroundColor: "rgba(255,195,0,0)" }, { backgroundColor: "rgba(255,195,0,0.14)", duration: 0.5, ease: "power2.out" }, 22.0);
+      slamScale("#big-kept", 22.2);
+      slamSide("#big-rej", 22.8);
+
+      // ================= Scene 7 — top reject gates (24.5–27.5) =================
+      settle("#s7-stage", 24.5);
+      kicker("#s7-kicker", 24.6);
+      tl.fromTo("#table-b", { x: -40, opacity: 0 }, { x: 0, opacity: 1, duration: 0.5, ease: "power3.out" }, 24.5);
+      printLines("#table-b .tline", 24.65);
+      slamScale("#big-gates", 25.6);
+      slamSide("#big-rubric", 26.2);
+
+      // ================= Scene 8 — four files (27.5–31.5) =================
+      settle("#s8-stage", 27.5);
+      kicker("#s8-kicker", 27.6);
+      [28.0, 28.5, 29.0, 29.5].forEach(function (beat, i) {
         tl.fromTo("#frow-" + (i + 1), { x: 60, opacity: 0 }, { x: 0, opacity: 1, duration: 0.4, ease: "expo.out" }, beat);
       });
 
-      // ================= Scene 5 — the rule (21.5–24.5) =================
-      settle("#s5-stage", 21.5);
-      slamScale("#q1", 21.9);
-      slamSide("#q2", 22.9);
-      tl.fromTo("#s5-mark", { y: 40, opacity: 0 }, { y: 0, opacity: 1, duration: 0.6, ease: "power3.out" }, 23.5);
+      // ================= Scene 9 — the rule (31.5–35.0) =================
+      settle("#s9-stage", 31.5);
+      slamScale("#q1", 31.9);
+      slamSide("#q2", 32.9);
+      tl.fromTo("#s9-mark", { y: 40, opacity: 0 }, { y: 0, opacity: 1, duration: 0.6, ease: "power3.out" }, 33.5);
 
       window.__timelines["main"] = tl;
     </script>

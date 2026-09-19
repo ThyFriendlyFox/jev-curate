@@ -3,7 +3,7 @@
 # Deterministic (seeded noise). Output: assets/drone.wav, mono 44.1 kHz.
 import numpy as np, wave
 SR = 44100
-DUR = 24.5
+DUR = 35.0
 t = np.arange(int(SR * DUR)) / SR
 rng = np.random.default_rng(7)
 
@@ -20,8 +20,8 @@ white = rng.standard_normal(len(t))
 brown = np.cumsum(white); brown -= np.convolve(brown, np.ones(2000)/2000, mode="same")
 brown /= np.max(np.abs(brown))
 # swell through the run scene (9.0 → 16.5), drop on the cut, quiet under the outro
-swell = env([(0,0.0),(5.0,0.0),(13.4,1.0),(13.5,0.0),(24.5,0.0)])
-master = env([(0,0.0),(1.5,1.0),(23.4,1.0),(24.5,0.0)])
+swell = env([(0,0.0),(5.5,0.0),(17.4,1.0),(17.5,0.0),(35.0,0.0)])
+master = env([(0,0.0),(1.5,1.0),(33.9,1.0),(35.0,0.0)])
 bed = drone * (0.16 + 0.10*swell) + brown * (0.03 + 0.05*swell)
 
 # thumps: pitch-drop sine 90 → 38 Hz over 0.45 s with a fast attack
@@ -35,8 +35,9 @@ def thump(at, gain):
     i = int(at * SR)
     bed[i:i+n] += s[:len(bed)-i]
 
-for at, g in [(0.25,0.6),(1.15,0.45),(2.7,0.7),(5.0,0.7),(7.5,0.35),(13.5,0.7),(13.9,0.9),
-              (17.0,0.75),(18.5,0.4),(19.0,0.4),(19.5,0.4),(20.0,0.45),(21.5,0.8),(21.9,0.9),(22.9,0.8),(23.5,0.7)]:
+for at, g in [(0.25,0.6),(1.15,0.45),(2.7,0.7),(5.5,0.7),(8.0,0.35),(10.5,0.7),(14.0,0.7),
+              (17.5,0.7),(17.9,0.9),(21.0,0.8),(24.5,0.8),(27.5,0.75),(28.0,0.4),(28.5,0.4),(29.0,0.4),(29.5,0.45),
+              (31.5,0.8),(31.9,0.9),(32.9,0.8),(33.5,0.7)]:
     thump(at, g)
 
 out = bed * master

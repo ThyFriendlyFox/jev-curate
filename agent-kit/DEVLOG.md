@@ -94,3 +94,9 @@ Evidence: `brag-output-2026-09-19-cinematic/brag.mp4` re-rendered, `npx hyperfra
 The human said the format should showcase the repository and named the first cut's hook as the one they love. I rebuilt the cinematic cut's storyboard in the first cut's order and kept its look: the t006 record with "This row is labeled billing. It is about to be training data.", the typed command and `audit.jsonl`, the row's verdict with the REJECTED stamp and the 2 real reason strings, the CLI's 2 Rich tables with the 4 output files beside them, then "Jev filters. It does not label." The drone bed and SFX were re-timed to the new cuts. 2 layout findings on the first check (a headline box touching the subline; the 2 tables overrunning their panel) were fixed by spacing and type size. `npx hyperframes check` then passed with 0 errors and 301/301 contrast checks.
 
 Evidence: `brag-output-2026-09-19-cinematic/brag.mp4` (735 frames, 24.5 s), `brag-output-2026-09-19-cinematic/brag-plan.md`.
+
+## 2026-09-19 — Cinematic cut: 36px type floor, 9 scenes, 35 s
+
+The human set a rule: no text below 36px; if it does not fit, make it bigger and add scenes. I rebuilt the cinematic cut to that rule. Every size at or below 36px went up (kicker, footer, panel bars, records, tables, descriptions). What no longer fit got its own scene: `audit.jsonl` is now 2 scenes of 5 records, the CLI's 2 Rich tables are 1 scene each with a display figure beside them (3 kept / 7 rejected; 5 gates / 1 rubric), and the 4 output files have their own scene. The cut runs 35 s in 9 scenes; the drone, typing track and SFX were re-timed. The first check found 1 error (2 stacked display lines at line-height 0.95 overlapped); line-height 1 fixed it. `npx hyperframes check` then passed with 0 errors and 195/195 contrast checks.
+
+Evidence: `brag-output-2026-09-19-cinematic/brag.mp4` (1050 frames, 35 s), `brag-output-2026-09-19-cinematic/brag-plan.md` (Type floor section).

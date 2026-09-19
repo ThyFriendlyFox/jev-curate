@@ -7,7 +7,8 @@ Create a short cinematic brag video for jev-curate, a second cut in a different 
 - Composition directory: `brag-output-2026-09-19-cinematic/composition/`
 - Rendered video: `brag-output-2026-09-19-cinematic/brag.mp4`
 - Format: landscape — 1920x1080
-- Duration: 24.5 seconds
+- Duration: 35 seconds
+- Type floor: no text below 36px; copy that does not fit gets its own scene
 
 ## Source Material
 - Project root: repo root
@@ -40,10 +41,10 @@ Create a short cinematic brag video for jev-curate, a second cut in a different 
 - Body font: Inter; code: IBM Plex Mono (bundled)
 
 ## Storyboard
-Use `brag-plan.md` as the creative contract. 1. The row 5.0s · 2. The run 8.5s · 3. The verdict 3.5s · 4. The results 4.5s · 5. The rule 3.0s.
+Use `brag-plan.md` as the creative contract. 1. The row 5.5s · 2. The command 5.0s · 3. audit.jsonl 1–5 3.5s · 4. audit.jsonl 6–10 3.5s · 5. The verdict 3.5s · 6. Curation results 3.5s · 7. Top reject gates 3.0s · 8. Four files 4.0s · 9. The rule 3.5s.
 
 ## Audio
-- Music: none. Bed is a generated sub-drone `assets/drone.wav` (`scripts/gen_drone.py`), data-volume 0.8, lane fade-in 0→0.5, fade-out 23.6→24.5
+- Music: none. Bed is a generated sub-drone `assets/drone.wav` (`scripts/gen_drone.py`), data-volume 0.8, lane fade-in 0→0.5, fade-out 34.1→35
 - Music cue guidance: none; timing grid as listed in the plan
 - Audio-reactive: `assets/audio-data.js` extracted from the drone (30 fps); thumps → gold light, grid, square marks; RMS → vignette
 - SFX: typing track `assets/sfx/typing.wav` (schedule in `assets/typing-schedule.js`); `interface/click_*` for Enter and audit lines; `impact/impactSoft_medium_*` for slams and rows; `impact/impactPunch_medium_000` for figures; `impact/impactBell_heavy_000/003/004` for the stamp and the outro
