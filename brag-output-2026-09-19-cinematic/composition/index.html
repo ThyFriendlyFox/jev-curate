@@ -508,15 +508,15 @@
       </section>
 
       <!-- audio -->
+      <!-- bed: generated sub-drone with thumps on the cuts (scripts/gen_drone.py); no music track -->
       <audio
-        id="music"
-        data-timeline-role="music"
-        src="assets/music/happy-beats-business-moves-vol-1-by-ende-dot-app.mp3"
+        id="bed"
+        src="assets/drone.wav"
         data-start="0"
         data-duration="24.5"
         data-track-index="10"
-        data-volume="0.34"
-        data-automation='{"version":1,"lanes":[{"target":"volume","points":[{"t":0,"v":0},{"t":0.4,"v":1},{"t":23.4,"v":1},{"t":24.5,"v":0}]}]}'
+        data-volume="0.8"
+        data-automation='{"version":1,"lanes":[{"target":"volume","points":[{"t":0,"v":0},{"t":0.5,"v":1},{"t":23.6,"v":1},{"t":24.5,"v":0}]}]}'
       ></audio>
       <audio id="sfx-slam1" src="assets/sfx/impact/impactSoft_medium_001.ogg" data-start="0.3" data-duration="0.4" data-track-index="14" data-volume="0.6"></audio>
       <audio id="sfx-slam2" src="assets/sfx/impact/impactSoft_medium_003.ogg" data-start="1.5" data-duration="0.4" data-track-index="14" data-volume="0.6"></audio>
@@ -599,7 +599,7 @@
         ["t009", false, ["duplicate_substance"]],
         ["t010", false, ["is_ambiguous", "bucket_matches_content"]],
       ];
-      // beat-grid: one record per beat, 12.02 → 16.52 (vol-1 preset, 120.19 BPM)
+      // grid: one record every 0.5 s, 12.02 → 16.52 (the cut's 120 BPM pulse; no music track)
       var AUDIT_BEATS = [12.02, 12.52, 13.01, 13.51, 14.02, 14.52, 15.02, 15.52, 16.02, 16.52];
       (function buildAudit() {
         var host = document.getElementById("alines");
@@ -643,10 +643,11 @@
           onUpdate: function () {
             var f = Math.min(AUDIO_DATA.totalFrames - 1, Math.max(0, Math.floor(reactive.t * AUDIO_DATA.fps)));
             var fr = AUDIO_DATA.frames[f];
-            lightEl.style.opacity = (0.45 + fr.b * 0.55).toFixed(3);
-            gridEl.style.opacity = (0.22 + fr.b * 0.3).toFixed(3);
-            vigEl.style.opacity = (0.95 - fr.r * 0.25).toFixed(3);
-            var s = 1 + fr.b * 0.35;
+            var hit = Math.min(1, Math.max(0, (fr.b - 0.24) / 0.5));
+            lightEl.style.opacity = (0.5 + hit * 0.5).toFixed(3);
+            gridEl.style.opacity = (0.24 + hit * 0.3).toFixed(3);
+            vigEl.style.opacity = (0.95 - fr.r * 0.6).toFixed(3);
+            var s = 1 + hit * 0.35;
             for (var i = 0; i < squares.length; i++) squares[i].style.transform = "scale(" + s.toFixed(3) + ")";
           },
         },

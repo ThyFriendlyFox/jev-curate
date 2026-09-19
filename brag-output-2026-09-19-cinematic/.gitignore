@@ -2,6 +2,3 @@
 composition/snapshots/
 composition/renders/
 composition/.hyperframes/
-# bundled music from the /brag skill (ende.app "Happy Beats / Business Moves"); not redistributed here.
-# Restore with: cp <brag-skill>/assets/music/happy-beats-business-moves-vol-1-by-ende-dot-app.mp3 composition/assets/music/
-composition/assets/music/*.mp3

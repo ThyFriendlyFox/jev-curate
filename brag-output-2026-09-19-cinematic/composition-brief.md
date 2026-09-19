@@ -42,11 +42,11 @@ Create a short cinematic brag video for jev-curate, a second cut in a different 
 Use `brag-plan.md` as the creative contract. 1. Three slams 4.02s · 2. The row 5.0s · 3. The run 7.5s · 4. The numbers 4.0s · 5. The rule 3.98s.
 
 ## Audio
-- Music: `assets/music/happy-beats-business-moves-vol-1-by-ende-dot-app.mp3`, data-volume 0.34, lane fade-in 0→0.4, fade-out 23.4→24.5
-- Music cue guidance: `assets/music/cues/happy-beats-business-moves-vol-1-by-ende-dot-app.music-cues.json`, 120.19 BPM; locks and grids as listed in the plan
-- Audio-reactive: `assets/audio-data.js` (first 24.5s, 30 fps); kick → gold light intensity and grid brightness; RMS → vignette
+- Music: none. Bed is a generated sub-drone `assets/drone.wav` (`scripts/gen_drone.py`), data-volume 0.8, lane fade-in 0→0.5, fade-out 23.6→24.5
+- Music cue guidance: none; timing grid as listed in the plan
+- Audio-reactive: `assets/audio-data.js` extracted from the drone (30 fps); thumps → gold light, grid, square marks; RMS → vignette
 - SFX: typing track `assets/sfx/typing.wav` (schedule in `assets/typing-schedule.js`); `interface/click_*` for Enter and audit lines; `impact/impactSoft_medium_*` for slams and rows; `impact/impactPunch_medium_000` for figures; `impact/impactBell_heavy_000/003/004` for the stamp and the outro
-- Track allocation: music 10, SFX 11 and up, no overlapping clips on one index
+- Track allocation: bed 10, SFX 11 and up, no overlapping clips on one index
 
 ## Hyperframes Instructions
 Domain skills: hyperframes-core, hyperframes-animation, hyperframes-creative, hyperframes-cli. /brag is its own workflow. `npx hyperframes check` is the single gate before render.

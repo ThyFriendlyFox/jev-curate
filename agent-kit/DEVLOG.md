@@ -82,3 +82,9 @@ Evidence: `brag-output/brag.mp4` (735 frames, 1920x1080, 24.5 s), `brag-output/b
 The first video was cream paper and a serif. The human asked for a different style and different colors. I made a second cut with the same `/brag` flow in `brag-output-2026-09-19-cinematic/`: deep navy and gold, League Gothic display type, hard cuts on the beat of the vol-1 track at 120 BPM. It opens with 3 slams ("Ten rows." "Three pass." "Seven do not."), stamps row `t006` REJECTED with the audit's 2 real reason strings, runs the command, fills `audit.jsonl` in 2 columns, and lands 3 hero figures (3 kept, 7 rejected, 30.0%). The figures are the same mock run as the first cut. `npx hyperframes check` passed with 0 errors and 141/141 contrast checks after 1 fix: stacked display lines at line-height 0.92 overlapped, so I set it to 1.
 
 Evidence: `brag-output-2026-09-19-cinematic/brag.mp4` (735 frames, 1920x1080, 24.5 s), `brag-output-2026-09-19-cinematic/brag-plan.md`.
+
+## 2026-09-19 — Cinematic cut: music out, drone in
+
+The human liked the cinematic cut but not its music. The `/brag` skill bundles 5 tracks from one upbeat corporate series, and none fits a dark trailer register. I removed the music and generated a bed instead: `composition/scripts/gen_drone.py` writes `assets/drone.wav`, a detuned 55 Hz sub-drone with a slow swell under the run scene and pitch-drop thumps on every cut and slam. The SFX layer is unchanged. The gold light and grid now pulse on the thumps. The bed is generated code, so it is committed; no third-party music remains in that folder.
+
+Evidence: `brag-output-2026-09-19-cinematic/brag.mp4` re-rendered, `npx hyperframes check` green.

@@ -45,11 +45,11 @@ No site CSS exists; the terminal is the identity. Palette from the hyperframes-c
 Ten rows in. Three out. jev-curate runs pass/fail gates on every training row with TypeSafe Jev and writes down why the rest were dropped.
 
 ## Audio direction
-- Role: dense rhythmic bed with big accents
-- Music: `happy-beats-business-moves-vol-1-by-ende-dot-app.mp3` (most energetic bundled track, 120.19 BPM)
-- Music treatment: volume 0.34, fade in 0 to 0.4s, fade out 23.4 to 24.5s
-- Music cue guidance: preset `assets/music/cues/happy-beats-business-moves-vol-1-by-ende-dot-app.music-cues.md`. Beat grid starts at 3.02s and runs every 0.5s. Strong-cue locks: 17.02 (figure 1), 18.02 (figure 3), 21.01 (outro line 1), 22.01 (outro line 2), 23.02 (wordmark). Scene cuts on 4.02, 9.02, 16.52, 20.52. Audit lines on every beat 12.02 to 16.52; file rows on 18.52, 19.02, 19.52, 20.02.
-- Audio-reactive treatment: expressive on non-text; kick drives the gold light's intensity and the grid's brightness, RMS drives a slow vignette breathe. Text scale stays fixed.
+- Role: no music. A generated sub-drone (`composition/scripts/gen_drone.py` → `assets/drone.wav`) with pitch-drop thumps on every cut and slam, a slow swell under the run scene, and silence-shaped SFX on top.
+- Music: none. The bundled ende.app tracks were tried (vol-1) and cut at the human's request: the upbeat corporate bed did not fit the register.
+- Bed treatment: volume 0.8, fade in 0 to 0.5s, fade out 23.6 to 24.5s. Thumps at 0.3, 1.5, 2.6, 4.02, 5.53, 9.02, 11.52, 16.52, 17.02, 17.52, 18.02, 20.52, 21.01, 22.01, 23.02.
+- Music cue guidance: none; the cut keeps its own 0.5 s grid (120 BPM feel). Scene cuts on 4.02, 9.02, 16.52, 20.52. Audit lines every 0.5 s from 12.02 to 16.52; figures at 17.02, 17.52, 18.02; file rows on 18.52, 19.02, 19.52, 20.02; outro lines at 21.01, 22.01, 23.02.
+- Audio-reactive treatment: the thumps drive the gold light's intensity, the grid's brightness and the square marks; the drone's RMS drives the vignette. Text scale stays fixed.
 - SFX posture: moderate, motion-matched
 - Audio-coupled moments: slams (soft impacts), stamp (bell), typing ticks, Enter click, audit-line clicks, figure landings (punch), outro lines (bells)
 - Restraint rule: two bells in the outro, nothing else above 0.6
@@ -61,7 +61,7 @@ Navy-black ground with a faint gold data grid. "TEN ROWS." slams in at 0.3 (scal
 Sequential/interaction: yes, three phrases with three distinct entrances.
 Audio intent: three hits before the beat grid arrives.
 Audio-coupled idea: soft impact per slam.
-Music: bed, intro
+Music: drone only
 Transition mood: hard → Scene 2
 
 ### Scene 2 — The row — 5.0s (4.02–9.02)
@@ -92,8 +92,8 @@ Audio intent: two bells, then quiet.
 Audio-coupled idea: bell at 21.01 and 23.02.
 Transition mood: hold to end
 
-**Music mood for this video:** cinematic, driving.
-**Audio summary:** three dry hits in the intro, the beat grid takes over for the run, three punches for the figures, two bells to close.
+**Music mood for this video:** none; a dark sub-drone.
+**Audio summary:** three thumps in the intro, the drone swells under the run and drops on the cut, three punches for the figures, two bells to close.
 
 ## Provenance of figures
 Every number and output line comes from `jev-curate run --mock --rubric examples/rubric.yaml --input examples/corpus.jsonl` on the shipped example corpus (the mock is the repo's test fixture). The terminal header is the live-mode string the CLI prints when `TYPESAFE_API_KEY` is set. Reason strings are the audit's `reason` fields, verbatim.
