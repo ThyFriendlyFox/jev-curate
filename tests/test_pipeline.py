@@ -7,8 +7,8 @@ from jev_curate.rubric import load_rubric
 
 def test_pipeline_mock(tmp_path: Path):
     root = Path(__file__).resolve().parents[1]
-    rubric = load_rubric(root / "examples" / "rubric.yaml")
-    inp = root / "examples" / "corpus.jsonl"
+    rubric = load_rubric(root / "examples" / "training-cleanup" / "rubric.yaml")
+    inp = root / "examples" / "training-cleanup" / "corpus.jsonl"
     out = tmp_path / "out"
     pipeline = CurationPipeline(
         PipelineConfig(rubric=rubric, input_path=inp, output_dir=out),

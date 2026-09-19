@@ -1,0 +1,17 @@
+name: asr_transcript_gates
+state_field: text
+model: jev-latest
+pass_mode: all
+
+gates:
+  - name: asr_plausible
+    type: noul
+    instructions: Does this transcript read like plausible spoken language, not ASR hallucination on silence, music, or noise?
+    pass:
+      min_yes: 0.80
+
+  - name: has_semantic_content
+    type: noul
+    instructions: Does this contain meaningful semantic content beyond filler or STT artifacts?
+    pass:
+      min_yes: 0.65

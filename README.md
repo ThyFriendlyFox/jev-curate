@@ -1,90 +1,135 @@
 # jev-curate
 
-**Corpus curation with [TypeSafe Jev](https://typesafe.ai)** — run pass/fail gates on every training example, keep what passes, drop the rest with an audit trail. Uses the **live Jev API** by default (`typesafe-sdk` → `jev-latest`).
+Filter training JSONL with [TypeSafe Jev](https://typesafe.ai): **pass/fail gates** on every row, **`curated.jsonl`** for what survives, **`rejected.jsonl`** with a full audit trail. **Live Jev by default** — mock is test-only.
 
-Sibling to [jev-triage](https://github.com/ThyFriendlyFox/jev-triage) (pattern #3: active learning). This repo is **pattern #1: data curation** — filter the whole corpus, not a sample.
+| | |
+|---|---|
+| **Repo purpose** | Corpus-scale **quality filter** before labeling or training (pattern #1: data curation) |
+| **Sibling** | [jev-triage](https://github.com/ThyFriendlyFox/jev-triage) — route survivors to accept / teacher / human |
+| **Deep dive** | [GOALS.md](GOALS.md) — success checklist, anti-goals, mock vs live |
+| **Both repos** | [jev-triage docs/STACK.md](https://github.com/ThyFriendlyFox/jev-triage/blob/main/docs/STACK.md) |
 
-> Filter with Jev. Train on real outcome labels. Do not treat Jev as your teacher of record.
+---
+
+## What problem this solves
+
+Bad rows poison fine-tunes: hallucinated ASR, wrong buckets, ambiguous classes, labels that do not match text. LLM judges on every row are too expensive. Jev runs **cheap parallel gates** (~$21 per million 500-token examples) so you can filter the **entire** corpus, not a sample.
+
+**Jev is not ground truth.** Curation means “good enough to enter the pipeline.” Final labels still come from humans, teachers, or **real outcomes** (pass/fail, cost, etc.).
+
+---
+
+## What success looks like (short)
+
+Full checklist: [GOALS.md](GOALS.md).
+
+> You ran **live** Jev with gates tied to real failure modes, split input into curated vs rejected with audits, **spot-checked** both sides, trained or triaged **only from `curated.jsonl`**, and measured models on **human- or outcome-labeled** eval data — not on “Jev said keep.”
+
+---
 
 ## Quick start
 
 ```bash
 pip install -e ".[dev]"
-export TYPESAFE_API_KEY="sk-..."   # required unless --mock (tests only)
+export TYPESAFE_API_KEY="sk-..."   # required for production
 
-jev-curate check-jev   # optional smoke test
+jev-curate check-jev
 
 jev-curate run \
-  --rubric examples/rubric.yaml \
-  --input examples/corpus.jsonl \
-  --output .output/run1
+  --rubric examples/training-cleanup/rubric.yaml \
+  --input examples/training-cleanup/corpus.jsonl \
+  --output .output/training-cleanup
 ```
 
-### Outputs
+| Mode | Command |
+|------|---------|
+| **Live** | `TYPESAFE_API_KEY` set, no `--mock` |
+| **Mock (tests only)** | `--mock` — CI / pytest; **not** for dataset decisions |
 
-| File | Contents |
-|------|----------|
-| `curated.jsonl` | Rows that passed **all** required gates — use for training |
-| `rejected.jsonl` | Failed rows + `_curation` audit (which gate, Jev probabilities) |
-| `audit.jsonl` | Per-example gate results (kept or not) |
-| `errors.jsonl` | API / parse failures (re-run skips completed ids) |
+Without an API key the CLI **errors** — it will not silently mock production runs.
 
-## Rubric: gates + pass rules
+---
 
-Each gate is one Jev question (`noul`, `choice`, or `score`) plus a **pass** block:
+## Examples
+
+| Scenario | Folder | Read |
+|----------|--------|------|
+| General training cleanup | [training-cleanup](examples/training-cleanup/) | [SUCCESS.md](examples/training-cleanup/SUCCESS.md) |
+| Post-Whisper ASR poison | [asr-gates](examples/asr-gates/) | [SUCCESS.md](examples/asr-gates/SUCCESS.md) |
+| Strict held-out eval pool | [eval-set-hygiene](examples/eval-set-hygiene/) | [SUCCESS.md](examples/eval-set-hygiene/SUCCESS.md) |
+
+Index: [examples/README.md](examples/README.md)
+
+Top-level `examples/rubric.yaml` and `examples/corpus.jsonl` duplicate **training-cleanup** for backward compatibility.
+
+---
+
+## Outputs
+
+| File | Use |
+|------|-----|
+| **`curated.jsonl`** | **Input to training or jev-triage** |
+| `rejected.jsonl` | Tune thresholds; sample false rejects |
+| `audit.jsonl` | Every gate result per id |
+| `errors.jsonl` | API failures; re-run resumes |
+
+Each curated row includes `_curation` with failed gate names and Jev probabilities.
+
+---
+
+## Gates (rubric)
 
 ```yaml
-gates:
-  - name: transcript_valid
-    type: noul
-    instructions: Coherent text, not garbled ASR?
-    pass:
-      min_yes: 0.75
+pass_mode: all   # every required gate must pass
 
+gates:
   - name: is_ambiguous
     type: noul
     instructions: Could this belong to more than one category?
     pass:
-      max_yes: 0.40   # must be "no" (low yes probability)
+      max_yes: 0.40    # require "no" (low yes probability)
 
   - name: bucket_matches_content
     type: choice
-    instructions: Best category for this message (ignore label field)
+    instructions: Best category from text alone
     criteria:
       billing: ...
       technical: ...
     pass:
-      match_field: label      # Jev choice must match row["label"]
+      match_field: label
       min_confidence: 0.55
 ```
 
-- `pass_mode: all` (default) — every **required** gate must pass.
-- Set `required: false` on a gate to log it in audit without rejecting.
+`required: false` logs a gate in audit without rejecting.
 
-## Why live Jev
+---
 
-Curation runs at scale (~$21 per million 500-token examples at $0.042/MTok). Mock mode (`--mock`) exists **only for pytest**; production runs should call the real API so probabilities and thresholds mean something.
+## Pipeline placement
 
-## Resume / scale
+```
+Raw JSONL
+  → jev-curate (this repo)     curated.jsonl | rejected.jsonl
+  → jev-triage (optional)      labeling budget
+  → train                      real outcome labels
+```
 
-The pipeline skips any `id` already written to `curated.jsonl`, `rejected.jsonl`, or `errors.jsonl`. Shard input JSONL by slice, run workers with distinct output dirs, merge `curated.jsonl` files downstream.
+---
 
-For high throughput, run many concurrent `system_one` calls (respect TypeSafe rate limits); `concurrency` in config is reserved for a future async release.
+## Mock vs live
 
-## Relation to jev-triage
+| | Live | `--mock` |
+|---|------|----------|
+| Validates rubric semantics | Yes (spot-check humans) | No |
+| Validates CLI/resume | Yes | Yes |
+| OK for production manifest | Yes | **Never** |
 
-| Tool | Job |
-|------|-----|
-| **jev-curate** | Binary keep/drop + audit |
-| **jev-triage** | keep / teacher queue / human queue by confidence |
-
-Typical stack: **curate** first (cheap gates) → **triage** on what passes (expensive labeling budget).
+---
 
 ## Development
 
 ```bash
 pytest
-jev-curate validate-rubric --rubric examples/rubric.yaml
+jev-curate validate-rubric --rubric examples/training-cleanup/rubric.yaml
 ```
 
 ## License

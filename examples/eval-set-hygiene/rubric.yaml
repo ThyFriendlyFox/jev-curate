@@ -1,0 +1,29 @@
+name: eval_set_hygiene
+state_field: text
+model: jev-latest
+pass_mode: all
+
+gates:
+  - name: transcript_valid
+    type: noul
+    instructions: Coherent, unambiguous text suitable as a benchmark example?
+    pass:
+      min_yes: 0.85
+
+  - name: is_ambiguous
+    type: noul
+    instructions: Could multiple correct labels exist for this example?
+    pass:
+      max_yes: 0.25
+
+  - name: bucket_matches_content
+    type: choice
+    instructions: Best single category for this text (gold label should match this).
+    criteria:
+      billing: Payment or refund
+      technical: Bug or error
+      sales: Pricing or plan
+      other: Other
+    pass:
+      match_field: label
+      min_confidence: 0.70

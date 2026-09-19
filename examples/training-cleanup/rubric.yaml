@@ -1,0 +1,41 @@
+name: training_example_curation
+state_field: text
+model: jev-latest
+pass_mode: all
+
+gates:
+  - name: transcript_valid
+    type: noul
+    instructions: Does this text read like a coherent training example rather than garbled or hallucinated output?
+    pass:
+      min_yes: 0.75
+
+  - name: label_plausible
+    type: noul
+    instructions: Given the text and the assigned label in state, is the label plausible?
+    pass:
+      min_yes: 0.70
+
+  - name: is_ambiguous
+    type: noul
+    instructions: Is this example ambiguous — could it reasonably belong to more than one category?
+    pass:
+      max_yes: 0.40
+
+  - name: duplicate_substance
+    type: noul
+    instructions: Does this read like a near-duplicate template with only trivial word changes?
+    pass:
+      max_yes: 0.35
+
+  - name: bucket_matches_content
+    type: choice
+    instructions: Which category best matches the message content? Ignore the label field when deciding.
+    criteria:
+      billing: Payment, refund, subscription, invoice
+      technical: Bugs, errors, integrations, outages
+      sales: Pricing, plans, upgrades, demos
+      other: General or unclear
+    pass:
+      match_field: label
+      min_confidence: 0.55
