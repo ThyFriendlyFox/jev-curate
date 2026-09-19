@@ -27,7 +27,7 @@ jev-curate run \
 | `curated.jsonl` | Rows that passed **all** required gates — use for training |
 | `rejected.jsonl` | Failed rows + `_curation` audit (which gate, Jev probabilities) |
 | `audit.jsonl` | Per-example gate results (kept or not) |
-| `errors.jsonl` | API / parse failures (re-run skips completed ids) |
+| `errors.jsonl` | API / parse failures. A re-run skips these ids too, unless you pass `--retry-errors` |
 
 ## Rubric: gates + pass rules
 
@@ -65,11 +65,22 @@ gates:
 
 Curation runs at scale (~$21 per million 500-token examples at $0.042/MTok). Mock mode (`--mock`) exists **only for pytest**; production runs should call the real API so probabilities and thresholds mean something.
 
+### Flags
+
+| Flag | Default | Effect |
+|------|---------|--------|
+| `--limit N` | none | Evaluate at most N rows this run (skipped rows do not count) |
+| `--concurrency N` | 1 | N parallel Jev calls; one thread writes the files |
+| `--retry-errors` | off | Re-evaluate ids that appear only in `errors.jsonl` |
+| `--mock` | off | Mock client, tests only |
+
+A bad API key stops the run with one line instead of filling `errors.jsonl`.
+
 ## Resume / scale
 
-The pipeline skips any `id` already written to `curated.jsonl`, `rejected.jsonl`, or `errors.jsonl`. Shard input JSONL by slice, run workers with distinct output dirs, merge `curated.jsonl` files downstream.
+The pipeline skips any `id` already written to `curated.jsonl`, `rejected.jsonl`, or `errors.jsonl` (pass `--retry-errors` to re-evaluate the errored ones). Shard input JSONL by slice, run workers with distinct output dirs, merge `curated.jsonl` files downstream.
 
-For high throughput, run many concurrent `system_one` calls (respect TypeSafe rate limits); `concurrency` in config is reserved for a future async release.
+For high throughput, pass `--concurrency N`. Calls run in N threads; the output files are still written by one thread, in completion order. Respect your TypeSafe rate limit: the SDK retries 429s with backoff, but sustained 429s land in `errors.jsonl`.
 
 ## Relation to jev-triage
 
@@ -83,9 +94,11 @@ Typical stack: **curate** first (cheap gates) → **triage** on what passes (exp
 ## Development
 
 ```bash
-pytest
-jev-curate validate-rubric --rubric examples/rubric.yaml
+pip install -e ".[dev]"
+./verify/verify.sh        # lint, build, tests, and the repo gates — CI runs this same script
 ```
+
+`agent-kit/` is the operating manual for anyone (human or agent) working on this repo; start at `agent-kit/ROUTING.md`. `ralph/` holds a Ralph loop whose goal is this README: `ralph/GOAL.md` lists each claim above with the gate that proves it, and `ralph/loop.sh` runs an agent until `./verify/verify.sh` is green.
 
 ## License
 

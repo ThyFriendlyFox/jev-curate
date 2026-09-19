@@ -1,0 +1,81 @@
+# ROADMAP.md — the source of all work
+
+**This file is not optional.** Every feature the agent builds flows down
+from here. If it isn't on this roadmap, it doesn't get built; if it needs
+building, it gets added here first. One item ships per weekly cycle
+(see `WEEKLY.md`).
+
+## North star
+
+jev-curate is the cheap first pass over a training corpus: every row goes
+through pass/fail gates answered by TypeSafe Jev, what passes is kept,
+what fails is rejected with a written reason, and a re-run never pays
+twice. It stays a filter. It never becomes the teacher of record: no Jev
+answer turns into a training label. It scales by concurrency and by
+sharding, and it hands its output to `jev-triage` for the expensive
+labeling budget.
+
+## Feature Queue — ordered; top unblocked item ships next
+
+<!-- RULES:
+     · Always ≥3 ready items. Refilling the queue is part of every weekly
+       cycle (WEEKLY.md step 7) — a starving queue is a failed cycle.
+     · Order is priority. The agent takes the TOP unblocked item and may
+       not reorder without recording why (below, under "Queue changes").
+     · Every item carries a completion promise: ONE testable sentence
+       that is unambiguously true or false. No promise, not ready.
+     · "Evidence" names how the promise will be proven: which gate,
+       screenshot, benchmark, or user-visible behavior. -->
+
+provisional: true — the human has not ranked these yet.
+
+### 1. `jev-curate merge`
+- **Promise:** `jev-curate merge --output <dir> <run1> <run2> ...` writes one `curated.jsonl` and one `rejected.jsonl` in which each id appears once, and reports how many duplicates it dropped.
+- **Evidence:** `tests/test_merge.py` merges 2 mock runs with 1 overlapping id; gate `20_mock_run` extended to shard, run twice, merge, and count.
+- **Use case:** docs/USE-CASES.md "Shard and merge".
+- **Scope guard:** No re-evaluation, no conflict resolution beyond first-seen wins, no `audit.jsonl` merging.
+- **Status:** ready
+
+### 2. Token and cost report
+- **Promise:** After a run, `jev-curate stats --output <dir>` prints total `input_tokens` from Jev usage and an estimated cost at a `--rate` per million tokens (default 0.042 USD).
+- **Evidence:** `audit.jsonl` rows carry `usage`; `tests/test_cli.py::test_stats_reports_tokens` with the mock's word-count usage; row for `--rate` in docs/CONFIGURATION.md.
+- **Use case:** docs/USE-CASES.md "Estimate cost before a full run".
+- **Scope guard:** No live pricing lookup; no per-gate cost split.
+- **Status:** ready
+
+### 3. Retry policy for large runs
+- **Promise:** `run --max-retries N` and `--retry-timeout S` build `LiveJevClient` with a `RetryPolicy(max_retries=N, timeout=S)`, and a unit test proves the policy reaches the SDK client.
+- **Evidence:** `tests/test_client.py` inspects the constructed `TypeSafeClient` retry policy; rows in docs/CONFIGURATION.md.
+- **Use case:** docs/USE-CASES.md "Curate at scale".
+- **Scope guard:** No custom backoff; the SDK's `RetryPolicy` is the whole surface.
+- **Status:** ready
+
+### 4. Review sample
+- **Promise:** `jev-curate sample --output <dir> --n 50` writes `sample.jsonl` with 50 random rejected rows and their failed gates for a human spot check.
+- **Evidence:** `tests/test_cli.py::test_sample`; docs row for `--n`.
+- **Use case:** docs/USE-CASES.md "Spot-check what was dropped".
+- **Scope guard:** No UI, no labeling, no writing back.
+- **Status:** ready
+
+## Later — candidates, not yet specced
+
+- Async client (`AsyncTypeSafeClient`) — higher throughput than threads once rate limits allow it.
+- Local exact-duplicate pass before Jev — hash the state field; skip a paid call for byte-identical rows.
+- HTML audit report — one page per run: keep rate, reject gates, sample rows.
+- Per-gate skip on resume — re-run only new gates when a rubric grows.
+
+## Shipped
+
+| Week | Feature | Release | Evidence |
+|---|---|---|---|
+| 2026-09-19 | Make the README true: gated quick start, concurrency, `--retry-errors`, fail-closed gates, fail-fast on bad key, agent kit, Ralph loop | unreleased | `./verify/verify.sh` green on branch `claude/ralph-loop-implementation-meir2m`; `ralph/GOAL.md` checklist |
+
+## Explicitly not doing
+
+- Using Jev answers as training labels — the README's one rule: filter with Jev, train on real outcome labels.
+- A triage queue (keep / teacher / human) — that is `jev-triage`'s job.
+- A hosted service or UI — this is a CLI over JSONL.
+
+## Queue changes
+
+- 2026-09-19 — Queue seeded during SETUP.md from README gaps (`merge`, cost, retry policy, sample). Provisional until the human ranks it.
