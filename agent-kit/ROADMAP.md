@@ -58,7 +58,7 @@ provisional: true — the human has not ranked these yet.
 - **Status:** ready
 
 ### 5. Calibrate the example rubric against live Jev
-- **Promise:** On `examples/corpus.jsonl` with live Jev, the example rubric keeps every row the corpus marks clean and rejects every row it marks bad, and `examples/README.md` records the live probabilities behind each threshold.
+- **Promise:** On `examples/corpus.jsonl` with live Jev, the example rubric keeps every row the corpus marks clean and rejects every row it marks bad, and `examples/live-run.md` records the live probabilities behind each threshold.
 - **Evidence:** A committed `examples/live-run.md` table of per-gate live probabilities; gate `20_mock_run` still green; the mock's heuristics updated only if the gate names change.
 - **Use case:** docs/USE-CASES.md "Filter a labeled corpus".
 - **Scope guard:** No new gate kinds. Reword or re-threshold `duplicate_substance` and `is_ambiguous` only. Jev sees 1 row per call, so a gate must not ask about other rows.
