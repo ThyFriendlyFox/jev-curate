@@ -26,7 +26,7 @@ is the default; mock exists for tests only.
 | 9 | Live is the default; `run` without a key fails with a plain message | test `test_run_without_key_fails` |
 | 10 | Rubric gates support `noul`, `choice`, `score` with the documented pass rules, `pass_mode`, and `required: false` | tests in `tests/test_gates.py` |
 | 11 | A gate Jev did not answer fails closed (required → reject) | test `test_missing_answer_fails_required_gate` |
-| 12 | Concurrent `system_one` calls are a real option, not "reserved" | test `test_pipeline_concurrency`, `--concurrency` documented |
+| 12 | Concurrent `system_one` calls are a real option, not "reserved" | test `test_pipeline_concurrency_matches_sequential`, `--concurrency` documented |
 | 13 | A bad API key stops the run at once instead of writing N error rows | test `test_auth_error_fails_fast` |
 | 14 | The agent kit is installed with no placeholders and a ready roadmap | gate `40_agent_kit` |
 | 15 | Every CLI flag and rubric key is documented | gate `50_docs_cover_options` |
