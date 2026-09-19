@@ -1,0 +1,92 @@
+# jev-curate
+
+**Corpus curation with [TypeSafe Jev](https://typesafe.ai)** — run pass/fail gates on every training example, keep what passes, drop the rest with an audit trail. Uses the **live Jev API** by default (`typesafe-sdk` → `jev-latest`).
+
+Sibling to [jev-triage](https://github.com/ThyFriendlyFox/jev-triage) (pattern #3: active learning). This repo is **pattern #1: data curation** — filter the whole corpus, not a sample.
+
+> Filter with Jev. Train on real outcome labels. Do not treat Jev as your teacher of record.
+
+## Quick start
+
+```bash
+pip install -e ".[dev]"
+export TYPESAFE_API_KEY="sk-..."   # required unless --mock (tests only)
+
+jev-curate check-jev   # optional smoke test
+
+jev-curate run \
+  --rubric examples/rubric.yaml \
+  --input examples/corpus.jsonl \
+  --output .output/run1
+```
+
+### Outputs
+
+| File | Contents |
+|------|----------|
+| `curated.jsonl` | Rows that passed **all** required gates — use for training |
+| `rejected.jsonl` | Failed rows + `_curation` audit (which gate, Jev probabilities) |
+| `audit.jsonl` | Per-example gate results (kept or not) |
+| `errors.jsonl` | API / parse failures (re-run skips completed ids) |
+
+## Rubric: gates + pass rules
+
+Each gate is one Jev question (`noul`, `choice`, or `score`) plus a **pass** block:
+
+```yaml
+gates:
+  - name: transcript_valid
+    type: noul
+    instructions: Coherent text, not garbled ASR?
+    pass:
+      min_yes: 0.75
+
+  - name: is_ambiguous
+    type: noul
+    instructions: Could this belong to more than one category?
+    pass:
+      max_yes: 0.40   # must be "no" (low yes probability)
+
+  - name: bucket_matches_content
+    type: choice
+    instructions: Best category for this message (ignore label field)
+    criteria:
+      billing: ...
+      technical: ...
+    pass:
+      match_field: label      # Jev choice must match row["label"]
+      min_confidence: 0.55
+```
+
+- `pass_mode: all` (default) — every **required** gate must pass.
+- Set `required: false` on a gate to log it in audit without rejecting.
+
+## Why live Jev
+
+Curation runs at scale (~$21 per million 500-token examples at $0.042/MTok). Mock mode (`--mock`) exists **only for pytest**; production runs should call the real API so probabilities and thresholds mean something.
+
+## Resume / scale
+
+The pipeline skips any `id` already written to `curated.jsonl`, `rejected.jsonl`, or `errors.jsonl`. Shard input JSONL by slice, run workers with distinct output dirs, merge `curated.jsonl` files downstream.
+
+For high throughput, run many concurrent `system_one` calls (respect TypeSafe rate limits); `concurrency` in config is reserved for a future async release.
+
+## Relation to jev-triage
+
+| Tool | Job |
+|------|-----|
+| **jev-curate** | Binary keep/drop + audit |
+| **jev-triage** | keep / teacher queue / human queue by confidence |
+
+Typical stack: **curate** first (cheap gates) → **triage** on what passes (expensive labeling budget).
+
+## Development
+
+```bash
+pytest
+jev-curate validate-rubric --rubric examples/rubric.yaml
+```
+
+## License
+
+MIT

@@ -1,0 +1,44 @@
+# Data curation gates — filter with Jev, train on what passes.
+# pass_mode: all  → every required gate must pass to land in curated.jsonl
+
+name: training_example_curation
+state_field: text
+model: jev-latest
+pass_mode: all
+
+gates:
+  - name: transcript_valid
+    type: noul
+    instructions: Does this text read like a coherent training example rather than garbled or hallucinated output?
+    pass:
+      min_yes: 0.75
+
+  - name: label_plausible
+    type: noul
+    instructions: Given the text, is the assigned label field plausible for this example?
+    pass:
+      min_yes: 0.70
+
+  - name: is_ambiguous
+    type: noul
+    instructions: Is this example ambiguous — could it reasonably belong to more than one category?
+    pass:
+      max_yes: 0.40
+
+  - name: duplicate_substance
+    type: noul
+    instructions: Does this read like a near-duplicate of a generic template with only trivial changes?
+    pass:
+      max_yes: 0.35
+
+  - name: bucket_matches_content
+    type: choice
+    instructions: Which category best matches the message content (ignore the label field)?
+    criteria:
+      billing: Payment, refund, subscription, or invoice
+      technical: Bugs, errors, integrations, outages
+      sales: Pricing, plans, upgrades, demos
+      other: General or unclear
+    pass:
+      match_field: label
+      min_confidence: 0.55
