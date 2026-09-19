@@ -36,6 +36,13 @@ A choice or score reply with no confidence is an error row, not a guess. The
 gateway's free tier returns HTTP 429 after about 4 requests. Those rows land in
 `errors.jsonl`; run again later with `--retry-errors`.
 
+The gateway refuses a large request with HTTP 503, not 413. Measured on
+2026-09-19 with `examples/trec/rubric.yaml`: 75 rows and 150 questions passed
+at 15,609 input tokens; 87 rows and 174 questions got 503. Jev counts the
+shared state once and about 100 tokens per question. Keep a batch under about
+15,000 input tokens. The SDK retries a 503 twice, so 1 refused batch costs 3
+requests of quota.
+
 ```sh
 export AI_GATEWAY_API_KEY="vck_..."
 jev-curate run --gateway --rubric R --input I --output O

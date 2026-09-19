@@ -23,6 +23,8 @@ A rubric that does not parse stops the command with the YAML error. A rubric wit
 | `--gateway` | flag | off | Call live Jev through Vercel AI Gateway. Needs `AI_GATEWAY_API_KEY` in place of `TYPESAFE_API_KEY`. Not valid with `--mock` |
 | `--limit` | int | none | Evaluate at most N rows this run. Skipped rows do not count |
 | `--concurrency` | int ≥ 1 | `1` | Parallel Jev calls. One thread writes the files |
+| `--batch-size` | int ≥ 1 | `1` | Rows per Jev call. Every gate is asked once per row in the same request. A failed call writes 1 error line per row in it. Size it by tokens: see `CLIENTS.md`, gateway |
+| `--timeout` | seconds > 0 | SDK default, `10` | Wait this long for 1 Jev call. Raise it for large batches |
 | `--retry-errors` | flag | off | Re-evaluate ids that appear only in `errors.jsonl` |
 
 ### `jev-curate stats`

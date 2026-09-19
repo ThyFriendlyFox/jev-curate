@@ -18,7 +18,7 @@ from typesafe_sdk import (
     Usage,
 )
 
-from jev_curate.client import JevClient
+from jev_curate.client import BATCH_SEP, BATCH_STATE_KEY, JevClient
 
 
 class MockJevClient(JevClient):
@@ -28,11 +28,27 @@ class MockJevClient(JevClient):
     _TECH = re.compile(r"error|500|integration|fail|deploy", re.I)
     _SALES = re.compile(r"pricing|enterprise|seats", re.I)
 
+    def _evaluate_batch(self, rows: dict[str, Any], questions: dict[str, Question], *, model: str):
+        # Answer each row as its own call so a batched run matches an unbatched one.
+        answers: dict = {}
+        tokens = 0
+        for key, row_state in rows.items():
+            prefix = f"{key}{BATCH_SEP}"
+            own = {n.removeprefix(prefix): q for n, q in questions.items() if n.startswith(prefix)}
+            response = self.evaluate(row_state, own, model=model)
+            answers.update({f"{prefix}{gate}": a for gate, a in response.answers.items()})
+            tokens += response.usage.input_tokens or 0
+        return SystemOneResponse(
+            model=model, usage=Usage(input_tokens=tokens, output_tokens=0), answers=answers
+        )
+
     def _seed(self, text: str, salt: str) -> float:
         h = hashlib.sha256(f"{salt}:{text}".encode()).hexdigest()
         return int(h[:8], 16) / 0xFFFFFFFF
 
     def evaluate(self, state: Any, questions: dict[str, Question], *, model: str):
+        if isinstance(state, dict) and set(state) == {BATCH_STATE_KEY}:
+            return self._evaluate_batch(state[BATCH_STATE_KEY], questions, model=model)
         text = state if isinstance(state, str) else str(state)
         answers: dict = {}
         for name, q in questions.items():

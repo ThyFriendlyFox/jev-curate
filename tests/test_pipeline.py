@@ -118,3 +118,46 @@ def test_auth_error_fails_fast(tmp_path: Path, concurrency: int):
         _run(out, client=client, concurrency=concurrency)
     assert not (out / "errors.jsonl").exists()
     assert client.calls < 10
+
+
+@pytest.mark.parametrize("batch_size", [3, 10, 50])
+def test_pipeline_batches_match_unbatched(tmp_path: Path, batch_size: int):
+    single, batched = tmp_path / "single", tmp_path / "batched"
+    _run(single)
+    stats = _run(batched, batch_size=batch_size)
+    assert stats.processed == 10
+    assert _ids(batched / "curated.jsonl") == _ids(single / "curated.jsonl")
+    assert _ids(batched / "rejected.jsonl") == _ids(single / "rejected.jsonl")
+    assert (batched / "audit.jsonl").read_text() == (single / "audit.jsonl").read_text()
+
+
+class _CountingClient(JevClient):
+    def __init__(self) -> None:
+        self._inner = make_client(live=False)
+        self.calls: list[int] = []
+
+    def evaluate(self, state: Any, questions: dict[str, Question], *, model: str):
+        self.calls.append(len(questions))
+        return self._inner.evaluate(state, questions, model=model)
+
+
+def test_batch_is_one_call_with_every_gate_per_row(tmp_path: Path):
+    client = _CountingClient()
+    _run(tmp_path / "out", client=client, batch_size=10)
+    assert client.calls == [10 * 5]
+
+
+def test_failed_batch_writes_one_error_per_row(tmp_path: Path):
+    out = tmp_path / "out"
+    stats = _run(out, client=_FlakyOnce("charged twice"), batch_size=4)
+    assert stats.errors == 4
+    assert stats.processed == 6
+    assert _ids(out / "errors.jsonl") == ["t001", "t002", "t003", "t004"]
+    assert _run(out, retry_errors=True, batch_size=4).processed == 4
+
+
+def test_batch_auth_error_fails_fast(tmp_path: Path):
+    client = _BadKey()
+    with pytest.raises(TypeSafeAuthenticationError):
+        _run(tmp_path / "out", client=client, batch_size=5)
+    assert client.calls == 1

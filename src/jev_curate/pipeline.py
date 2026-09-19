@@ -4,15 +4,16 @@ from __future__ import annotations
 
 import json
 from collections import Counter
-from collections.abc import Iterator
+from collections.abc import Iterable, Iterator
 from concurrent.futures import FIRST_COMPLETED, Future, ThreadPoolExecutor, wait
 from dataclasses import dataclass, field
+from itertools import islice
 from pathlib import Path
 from typing import Any
 
 from typesafe_sdk import TypeSafeAuthenticationError
 
-from jev_curate.client import JevClient, evaluate_rubric
+from jev_curate.client import JevClient, evaluate_rubric, evaluate_rubric_batch
 from jev_curate.gates import CurationVerdict, evaluate_curation
 from jev_curate.rubric import CurationRubric
 
@@ -65,6 +66,7 @@ class PipelineConfig:
     limit: int | None = None  # max rows evaluated this run (skipped rows do not count)
     concurrency: int = 1  # parallel Jev calls; writes stay on the calling thread
     retry_errors: bool = False  # re-evaluate ids present only in errors.jsonl
+    batch_size: int = 1  # rows per Jev call; every gate is asked once per row
 
 
 @dataclass(frozen=True)
@@ -74,6 +76,12 @@ class _Outcome:
     state: Any = None
     verdict: CurationVerdict | None = None
     error: Exception | None = None
+
+
+def _chunks(items: Iterable[Any], size: int) -> Iterator[list[Any]]:
+    it = iter(items)
+    while chunk := list(islice(it, size)):
+        yield chunk
 
 
 def _example_id(row: dict[str, Any], index: int) -> str:
@@ -109,20 +117,21 @@ class CurationPipeline:
         if not self.config.retry_errors:
             done_paths.append(self.errors_path)
         done = load_done_ids(*done_paths)
-        pending = self._pending(done, stats)
+        batches = _chunks(self._pending(done, stats), max(1, self.config.batch_size))
 
         workers = max(1, self.config.concurrency)
         if workers == 1:
-            for ex_id, row in pending:
-                self._record(self._evaluate(ex_id, row), stats)
+            for batch in batches:
+                for outcome in self._evaluate_batch(batch):
+                    self._record(outcome, stats)
             return stats
 
         # Only the calling thread appends to the output files, so records never interleave.
         with ThreadPoolExecutor(max_workers=workers) as pool:
-            in_flight: set[Future[_Outcome]] = set()
+            in_flight: set[Future[list[_Outcome]]] = set()
             try:
-                for ex_id, row in pending:
-                    in_flight.add(pool.submit(self._evaluate, ex_id, row))
+                for batch in batches:
+                    in_flight.add(pool.submit(self._evaluate_batch, batch))
                     if len(in_flight) >= workers * 2:
                         in_flight = self._drain(in_flight, stats)
                 while in_flight:
@@ -144,11 +153,31 @@ class CurationPipeline:
             submitted += 1
             yield ex_id, row
 
-    def _drain(self, in_flight: set[Future[_Outcome]], stats: PipelineStats) -> set:
+    def _drain(self, in_flight: set[Future[list[_Outcome]]], stats: PipelineStats) -> set:
         finished, remaining = wait(in_flight, return_when=FIRST_COMPLETED)
         for fut in finished:
-            self._record(fut.result(), stats)
+            for outcome in fut.result():
+                self._record(outcome, stats)
         return remaining
+
+    def _evaluate_batch(self, batch: list[tuple[str, dict[str, Any]]]) -> list[_Outcome]:
+        if self.config.batch_size <= 1:
+            return [self._evaluate(ex_id, row) for ex_id, row in batch]
+        rubric = self.config.rubric
+        try:
+            states = {f"r{i}": _extract_state(row, rubric) for i, (_, row) in enumerate(batch, 1)}
+            answers = evaluate_rubric_batch(self.client, rubric, states)
+        except TypeSafeAuthenticationError:
+            raise
+        except Exception as exc:  # noqa: BLE001
+            # One failed call fails every row in it; each gets its own error line for resume.
+            return [_Outcome(ex_id, row, error=exc) for ex_id, row in batch]
+        return [
+            _Outcome(
+                ex_id, row, state=state, verdict=evaluate_curation(ex_id, rubric, answers[key], row)
+            )
+            for (ex_id, row), (key, state) in zip(batch, states.items(), strict=True)
+        ]
 
     def _evaluate(self, ex_id: str, row: dict[str, Any]) -> _Outcome:
         try:

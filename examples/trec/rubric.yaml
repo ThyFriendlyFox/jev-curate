@@ -1,0 +1,25 @@
+# Rubric for the TREC question-classification set (Hugging Face: SetFit/TREC-QC).
+# Rows carry the question in `state`, so Jev never sees the `label` it is checked against.
+name: trec_question_cleanup
+model: jev-latest
+pass_mode: all
+
+gates:
+  - name: well_formed
+    type: noul
+    instructions: Is this text a coherent English question or request?
+    pass:
+      min_yes: 0.5
+
+  - name: label_matches
+    type: choice
+    instructions: What kind of answer does this question ask for?
+    criteria:
+      ABBR: an abbreviation, or what an abbreviation stands for
+      DESC: a description, definition, reason, or manner
+      ENTY: an entity such as an animal, product, event, food, term, or creative work
+      HUM: a person, group, or organization
+      LOC: a place
+      NUM: a number, date, amount, or measure
+    pass:
+      match_field: label

@@ -16,7 +16,7 @@ jev-curate is a Python 3.10 command-line program over JSONL files. The code has 
 2. `cli.run` loads the rubric and refuses to go live without `TYPESAFE_API_KEY` (`AI_GATEWAY_API_KEY` with `--gateway`).
 3. `CurationPipeline.run` reads ids already in `O/curated.jsonl`, `O/rejected.jsonl`, and `O/errors.jsonl` (the last one unless `--retry-errors`).
 4. For each remaining row, `_extract_state` builds the state: the `state_field` text plus the row's other fields.
-5. `evaluate_rubric` sends the state and every gate's question to Jev in 1 `system_one` call and gets 1 answer per gate.
+5. `evaluate_rubric` sends the state and every gate's question to Jev in 1 `system_one` call and gets 1 answer per gate. With `--batch-size N`, `evaluate_rubric_batch` sends N rows as 1 state (`{"rows": {"r1": ..., "r2": ...}}`) and asks each gate once per row under the name `r1__<gate>`; each question names the row it judges.
 6. `evaluate_curation` applies each gate's pass rule. A missing answer fails. Required failures reject the row.
 7. `_record` appends the audit line, then the row plus `_curation` to `curated.jsonl` or `rejected.jsonl`. An exception becomes a line in `errors.jsonl`.
 8. `summarize` counts the 4 files and the CLI prints the result tables.

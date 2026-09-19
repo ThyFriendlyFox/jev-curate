@@ -32,6 +32,7 @@ is the default; mock exists for tests only.
 | 15 | Every CLI flag and rubric key is documented | gate `50_docs_cover_options` |
 | 16 | CI runs the same `verify.sh` as local | `.github/workflows/ci.yml` (proven by hand: the file calls the script) |
 | 17 | `--gateway` reaches live Jev through Vercel AI Gateway with the same answers, confidence, and fail-fast on a bad key | tests in `tests/test_gateway_client.py`; gate `30_live_jev` with `AI_GATEWAY_API_KEY` |
+| 18 | `--batch-size N` evaluates N rows in 1 Jev call with the same verdicts as N calls | tests `test_pipeline_batches_match_unbatched`, `test_batch_is_one_call_with_every_gate_per_row` |
 
 ## Out of scope for this loop
 

@@ -83,6 +83,8 @@ Curation runs at scale (~$21 per million 500-token examples at $0.042/MTok). Moc
 |------|---------|--------|
 | `--limit N` | none | Evaluate at most N rows this run (skipped rows do not count) |
 | `--concurrency N` | 1 | N parallel Jev calls; one thread writes the files |
+| `--batch-size N` | 1 | N rows per Jev call; every gate is asked once per row in one request |
+| `--timeout S` | 10 | Seconds to wait for one Jev call |
 | `--retry-errors` | off | Re-evaluate ids that appear only in `errors.jsonl` |
 | `--gateway` | off | Call live Jev through Vercel AI Gateway with `AI_GATEWAY_API_KEY` |
 | `--mock` | off | Mock client, tests only |

@@ -108,7 +108,11 @@ class GatewayJevClient(JevClient):
     """Calls Jev as `typesafe-ai/jev` on Vercel AI Gateway."""
 
     def __init__(
-        self, api_key: str | None = None, *, transport: httpx2.BaseTransport | None = None
+        self,
+        api_key: str | None = None,
+        *,
+        timeout: float | None = None,
+        transport: httpx2.BaseTransport | None = None,
     ) -> None:
         key = api_key or os.environ.get("AI_GATEWAY_API_KEY")
         if not key:
@@ -118,6 +122,7 @@ class GatewayJevClient(JevClient):
             )
         self._client = TypeSafeClient(
             api_key=key,
+            timeout=timeout,
             http_client=httpx2.Client(
                 transport=GatewayTransport(transport),
                 event_hooks={"response": [_name_gateway_endpoint]},

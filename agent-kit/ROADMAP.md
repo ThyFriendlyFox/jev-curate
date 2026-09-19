@@ -75,6 +75,7 @@ provisional: true — the human has not ranked these yet.
 
 | Week | Feature | Release | Evidence |
 |---|---|---|---|
+| 2026-09-19 | Batch rows per request: `run --batch-size N` asks every gate once per row in 1 Jev call; `--timeout S` | unreleased | `test_pipeline_batches_match_unbatched`, `test_batch_is_one_call_with_every_gate_per_row`; live: 75 rows, 150 answers, 1 request, 0.9 s; `ralph/GOAL.md` line 18 |
 | 2026-09-19 | Vercel AI Gateway client: `run --gateway` and `check-jev --gateway` reach live Jev with `AI_GATEWAY_API_KEY` | unreleased | `tests/test_gateway_client.py` (9 tests); live `check-jev --gateway` returned `ok.noul=0.990`; `ralph/GOAL.md` line 17 |
 | 2026-09-19 | Make the README true: gated quick start, concurrency, `--retry-errors`, fail-closed gates, fail-fast on bad key, agent kit, Ralph loop | unreleased | `./verify/verify.sh` green on branch `claude/ralph-loop-implementation-meir2m`; `ralph/GOAL.md` checklist |
 
@@ -86,6 +87,7 @@ provisional: true — the human has not ranked these yet.
 
 ## Queue changes
 
+- 2026-09-19 — The human asked for many rows in 1 request, because the gateway free tier limits requests, not tokens. It shipped the same day, ahead of the queue. Promise: `run --batch-size N` evaluates N rows in 1 Jev call and writes the same verdicts as N calls. Use case: docs/USE-CASES.md "Batch rows under a request quota".
 - 2026-09-19 — The human asked for a Vercel AI Gateway client, because their Jev access is a gateway key. It shipped the same day, ahead of the queue. Promise: `run --gateway` evaluates the rubric through live Jev on the gateway and a rejected key stops the run. Use case: docs/USE-CASES.md "Run with a Vercel AI Gateway key". The 4 ready items keep their order.
 - 2026-09-19 — Added item 5 from the first full live run: `duplicate_substance` rejected clean rows (`t001` yes=0.75 against `max_yes: 0.35`). I queued it last; the human has not ranked the queue.
 - 2026-09-19 — The first live run showed the gateway free tier returns 429 after about 4 requests. This raises the value of item 3 (retry policy). I did not reorder; the human has not ranked the queue.

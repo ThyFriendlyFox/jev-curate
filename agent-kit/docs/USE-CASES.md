@@ -45,6 +45,12 @@ Each case has the same shape.
 **Run.** `jev-curate run --gateway --rubric rubric.yaml --input corpus.jsonl --output out/`.
 **Use.** The same live Jev answers the gates, billed to the Vercel account. On the free tier, rate-limited rows land in `errors.jsonl`; run again later with `--retry-errors`.
 
+## Batch rows under a request quota
+
+**Prepare.** Know the request limit of your key, and keep rows short. Put the text in a `state` field so the label stays out of the request.
+**Run.** `jev-curate run ... --batch-size 70 --timeout 120`.
+**Use.** 70 rows cost 1 request. Jev bills the shared state once and each question on top. A failed call puts all 70 ids in `errors.jsonl` for `--retry-errors`.
+
 ## Curate at scale
 
 **Prepare.** Know your TypeSafe rate limit.

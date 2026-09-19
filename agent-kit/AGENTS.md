@@ -52,6 +52,7 @@ Requires Python 3.10.
 | `gates.py::_default_noul_rule` | A gate with no `pass:` block gets its direction from its name (`ambiguous`, `duplicate`, `bad` → `max_yes`). Renaming a gate flips its default. Always write a `pass:` block. |
 | `pipeline.py::load_done_ids` | `errors.jsonl` counts as done. A transient API failure is never retried unless the user passes `--retry-errors`. |
 | `gateway_client.py::_to_native_answer` | Choice and score confidence comes from `providerMetadata.typesafe.confidence`. Never fill a missing confidence from `probabilities`; `min_confidence` gates would then pass on a number Jev did not give. |
+| `client.py::evaluate_rubric_batch` | Jev scores every question alone against the whole state. A batched question must name its row ("Judge only the row named r7."), or every row gets the same answer. The mock splits on `__`; a gate name must not start a row key. |
 | `mock_client.py` | Regex heuristics tuned to `examples/corpus.jsonl`. Editing the corpus changes what gate `20_mock_run` sees. Mock probabilities mean nothing outside tests. |
 | `cli.py --limit` | Counts rows evaluated this run, not lines read. Skipped rows do not count. |
 | `verify/gates/50_docs_cover_options.sh` | A new CLI flag or rubric key with no row in `docs/CONFIGURATION.md` turns verify red. Add the row in the same commit. |

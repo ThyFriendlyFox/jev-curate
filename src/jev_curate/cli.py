@@ -56,6 +56,19 @@ def main() -> None:
     help="Parallel Jev calls. Respect your TypeSafe rate limit.",
 )
 @click.option(
+    "--batch-size",
+    type=click.IntRange(min=1),
+    default=1,
+    show_default=True,
+    help="Rows per Jev call. Every gate is asked once per row in the same request.",
+)
+@click.option(
+    "--timeout",
+    type=click.FloatRange(min=0, min_open=True),
+    default=None,
+    help="Seconds to wait for one Jev call. Default: the SDK's 10. Raise it for large batches.",
+)
+@click.option(
     "--retry-errors",
     is_flag=True,
     help="Re-evaluate ids that are only in errors.jsonl instead of skipping them.",
@@ -68,6 +81,8 @@ def run(
     gateway: bool,
     limit: int | None,
     concurrency: int,
+    batch_size: int,
+    timeout: float | None,
     retry_errors: bool,
 ) -> None:
     """Run curation gates over JSONL; write curated.jsonl and rejected.jsonl."""
@@ -81,11 +96,11 @@ def run(
             f"Live Jev requires {key_var}. Export your key or pass --mock for offline tests."
         )
 
-    client = make_client(live=live, gateway=gateway)
+    client = make_client(live=live, gateway=gateway, timeout=timeout)
     mode = _MODES["mock" if mock else "gateway" if gateway else "live"]
     console.print(
         f"[bold]jev-curate[/] rubric={loaded.name!r} model={loaded.model} "
-        f"mode={mode} concurrency={concurrency}"
+        f"mode={mode} concurrency={concurrency} batch_size={batch_size}"
     )
 
     pipeline = CurationPipeline(
@@ -95,6 +110,7 @@ def run(
             output_dir=output_dir,
             limit=limit,
             concurrency=concurrency,
+            batch_size=batch_size,
             retry_errors=retry_errors,
         ),
         client=client,
