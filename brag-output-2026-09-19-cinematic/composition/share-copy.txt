@@ -1,0 +1,1 @@
+Ten rows in. Three out. jev-curate runs pass/fail gates on every training row with TypeSafe Jev and writes down why the rest were dropped.

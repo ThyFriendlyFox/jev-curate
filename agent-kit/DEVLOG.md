@@ -76,3 +76,9 @@ Evidence: gate `40_agent_kit` green; `agent-kit/ROADMAP.md` Feature Queue.
 I ran the `/brag` skill (latent-spaces/brag) on this repo. It plans a short video and hands a brief to Hyperframes, which renders HTML to MP4. The video opens on row `t006` of `examples/corpus.jsonl`, types the README quick-start command, fills `audit.jsonl` one record per beat, prints the CLI's results table, and ends on the 4 output files. Every figure comes from `jev-curate run --mock` on the example corpus: 10 processed, 3 kept, 7 rejected. The terminal shows the live-mode header the CLI prints; the numbers are the mock's. `npx hyperframes check` passed with 0 errors and 257/257 contrast checks. The output lives in `brag-output/` with the plan, the brief, the composition, the poster, and the share copy. The music bed is not committed; `brag-output/.gitignore` says how to restore it.
 
 Evidence: `brag-output/brag.mp4` (735 frames, 1920x1080, 24.5 s), `brag-output/brag-plan.md`.
+
+## 2026-09-19 — Second brag cut in a different register
+
+The first video was cream paper and a serif. The human asked for a different style and different colors. I made a second cut with the same `/brag` flow in `brag-output-2026-09-19-cinematic/`: deep navy and gold, League Gothic display type, hard cuts on the beat of the vol-1 track at 120 BPM. It opens with 3 slams ("Ten rows." "Three pass." "Seven do not."), stamps row `t006` REJECTED with the audit's 2 real reason strings, runs the command, fills `audit.jsonl` in 2 columns, and lands 3 hero figures (3 kept, 7 rejected, 30.0%). The figures are the same mock run as the first cut. `npx hyperframes check` passed with 0 errors and 141/141 contrast checks after 1 fix: stacked display lines at line-height 0.92 overlapped, so I set it to 1.
+
+Evidence: `brag-output-2026-09-19-cinematic/brag.mp4` (735 frames, 1920x1080, 24.5 s), `brag-output-2026-09-19-cinematic/brag-plan.md`.

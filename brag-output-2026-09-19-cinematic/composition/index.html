@@ -1,0 +1,771 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <title>jev-curate — brag (cinematic)</title>
+    <script src="assets/vendor/gsap.min.js"></script>
+    <script src="assets/audio-data.js"></script>
+    <script src="assets/typing-schedule.js"></script>
+    <style>
+      :root {
+        --bg: #000814;
+        --panel: #001d3d;
+        --panel-2: #003566;
+        --gold: #ffc300;
+        --gold-16: rgba(255, 195, 0, 0.16);
+        --gold-40: rgba(255, 195, 0, 0.4);
+        --text: #e5e5e5;
+        --muted: #778da9;
+        --kept: #2ec4b6;
+        --rej: #ff4d5e;
+        --display: "League Gothic", Oswald, Impact, sans-serif;
+        --sans: Inter, system-ui, sans-serif;
+        --mono: "IBM Plex Mono", monospace;
+      }
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--text);
+        font-family: var(--sans);
+      }
+      #root {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        background: var(--bg);
+      }
+      .clip {
+        position: absolute;
+        inset: 0;
+      }
+      .stage {
+        position: absolute;
+        inset: 0;
+        transform-origin: 50% 50%;
+      }
+
+      /* ---------- ground ---------- */
+      .bg {
+        position: absolute;
+        inset: 0;
+      }
+      .grid {
+        position: absolute;
+        inset: 0;
+        background-image:
+          linear-gradient(var(--gold-16) 1px, transparent 1px),
+          linear-gradient(90deg, var(--gold-16) 1px, transparent 1px);
+        background-size: 120px 120px;
+        background-position: 40px 20px;
+        opacity: 0.35;
+      }
+      .light {
+        position: absolute;
+        left: 900px;
+        top: -500px;
+        width: 1600px;
+        height: 1600px;
+        border-radius: 50%;
+        background: radial-gradient(closest-side, rgba(255, 195, 0, 0.32), rgba(255, 195, 0, 0));
+        opacity: 0.7;
+      }
+      .vignette {
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(ellipse at 50% 55%, rgba(0, 8, 20, 0) 45%, rgba(0, 8, 20, 0.85) 100%);
+        opacity: 0.9;
+      }
+      .ghost {
+        position: absolute;
+        right: -40px;
+        top: 120px;
+        font-family: var(--display);
+        font-size: 640px;
+        line-height: 0.9;
+        color: var(--gold);
+        opacity: 0.05;
+        letter-spacing: -0.02em;
+        white-space: nowrap;
+      }
+      .footer {
+        position: absolute;
+        left: 80px;
+        right: 80px;
+        top: 1008px;
+        display: flex;
+        justify-content: space-between;
+        font-family: var(--mono);
+        font-size: 22px;
+        letter-spacing: 0.04em;
+        color: var(--muted);
+      }
+      .footer .line {
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: -18px;
+        height: 1px;
+        background: var(--gold-16);
+        transform-origin: left center;
+      }
+
+      /* ---------- kicker ---------- */
+      .kicker {
+        position: absolute;
+        left: 80px;
+        top: 76px;
+        display: flex;
+        align-items: center;
+        gap: 18px;
+        font-family: var(--mono);
+        font-size: 24px;
+        letter-spacing: 0.22em;
+        text-transform: uppercase;
+        color: var(--gold);
+      }
+      .sq {
+        display: inline-block;
+        width: 18px;
+        height: 18px;
+        background: var(--gold);
+        transform-origin: 50% 50%;
+      }
+
+      /* ---------- panels ---------- */
+      .panel {
+        position: absolute;
+        background: var(--panel);
+        border: 1px solid var(--gold-16);
+        color: var(--text);
+        overflow: hidden;
+      }
+      .panel .bar {
+        height: 52px;
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        padding: 0 24px;
+        border-bottom: 1px solid var(--gold-16);
+        font-family: var(--mono);
+        font-size: 22px;
+        letter-spacing: 0.06em;
+        color: var(--muted);
+      }
+      .panel .bar .title {
+        flex: 1;
+      }
+      .panel .body {
+        padding: 28px 32px;
+        font-family: var(--mono);
+        overflow-wrap: anywhere;
+      }
+      .pre,
+      .cmdline,
+      .out,
+      .aline,
+      .reason {
+        white-space: pre-wrap;
+      }
+      .k {
+        color: var(--muted);
+      }
+      .g {
+        color: var(--gold);
+      }
+      .ok {
+        color: var(--kept);
+      }
+      .fail {
+        color: var(--rej);
+      }
+      .bold {
+        font-weight: 700;
+      }
+
+      /* ---------- display type ---------- */
+      .slam {
+        font-family: var(--display);
+        font-weight: 400;
+        text-transform: uppercase;
+        line-height: 1;
+        letter-spacing: -0.005em;
+        color: var(--text);
+        opacity: 0;
+        will-change: transform;
+      }
+
+      /* ---------- scene 1 ---------- */
+      #s1 .stack {
+        position: absolute;
+        left: 80px;
+        top: 200px;
+        width: 1760px;
+      }
+      #s1 .slam {
+        font-size: 236px;
+      }
+      #s1 .gold {
+        color: var(--gold);
+      }
+      #s1 .dim {
+        color: var(--muted);
+      }
+
+      /* ---------- scene 2 ---------- */
+      #rec {
+        left: 80px;
+        top: 170px;
+        width: 1760px;
+        height: 520px;
+      }
+      #rec .body {
+        font-size: 40px;
+        line-height: 1.45;
+        padding: 34px 40px;
+      }
+      #reasons {
+        position: absolute;
+        left: 80px;
+        top: 740px;
+        width: 1760px;
+        font-family: var(--mono);
+        font-size: 34px;
+        line-height: 1.6;
+      }
+      .reason {
+        color: var(--rej);
+        opacity: 0;
+      }
+      .reason .k {
+        color: var(--muted);
+      }
+      #stamp {
+        position: absolute;
+        left: 1130px;
+        top: 440px;
+        padding: 6px 40px 0;
+        border: 8px solid var(--rej);
+        font-family: var(--display);
+        font-size: 190px;
+        line-height: 1;
+        letter-spacing: 0.02em;
+        color: var(--rej);
+        opacity: 0;
+        transform-origin: 50% 50%;
+        will-change: transform;
+      }
+
+      /* ---------- scene 3 ---------- */
+      #term {
+        left: 80px;
+        top: 170px;
+        width: 1760px;
+        height: 340px;
+      }
+      #term .body {
+        font-size: 26px;
+        line-height: 36px;
+        padding: 22px 32px;
+      }
+      .cmdline .c {
+        opacity: 0;
+      }
+      .prompt {
+        color: var(--gold);
+      }
+      .caret {
+        display: inline-block;
+        width: 14px;
+        height: 28px;
+        vertical-align: -5px;
+        background: var(--gold);
+        opacity: 0;
+      }
+      .out {
+        opacity: 0;
+      }
+      #audit {
+        left: 80px;
+        top: 540px;
+        width: 1760px;
+        height: 440px;
+      }
+      #alines {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        column-gap: 40px;
+        row-gap: 8px;
+        font-size: 21px;
+        line-height: 30px;
+      }
+      .aline {
+        opacity: 0;
+      }
+
+      /* ---------- scene 4 ---------- */
+      .figs {
+        position: absolute;
+        left: 80px;
+        top: 150px;
+        width: 1760px;
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 40px;
+      }
+      .fig {
+        opacity: 0;
+        border-top: 2px solid var(--gold-40);
+        padding-top: 18px;
+      }
+      .fig .num {
+        font-family: var(--display);
+        font-size: 330px;
+        line-height: 0.9;
+        color: var(--text);
+        font-variant-numeric: tabular-nums;
+        min-height: 300px;
+      }
+      .fig.gold .num {
+        color: var(--gold);
+      }
+      .fig .lab {
+        margin-top: 14px;
+        font-family: var(--mono);
+        font-size: 26px;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+      .files {
+        position: absolute;
+        left: 80px;
+        top: 700px;
+        width: 1760px;
+        font-family: var(--mono);
+        font-size: 32px;
+        line-height: 1.5;
+      }
+      .frow {
+        display: flex;
+        justify-content: space-between;
+        padding: 14px 0;
+        border-bottom: 1px solid var(--gold-16);
+        opacity: 0;
+      }
+      .frow .fn {
+        color: var(--text);
+      }
+      .frow .fc {
+        color: var(--gold);
+      }
+      .frow .fd {
+        flex: 1;
+        margin-left: 48px;
+        color: var(--muted);
+        font-family: var(--sans);
+        font-size: 26px;
+        align-self: center;
+      }
+
+      /* ---------- scene 5 ---------- */
+      #s5 .stack {
+        position: absolute;
+        left: 80px;
+        top: 170px;
+        width: 1760px;
+      }
+      #s5 .slam {
+        font-size: 290px;
+      }
+      #s5 .gold {
+        color: var(--gold);
+      }
+      #s5 .mark {
+        position: absolute;
+        left: 80px;
+        top: 830px;
+        display: flex;
+        align-items: baseline;
+        gap: 40px;
+        font-family: var(--mono);
+        opacity: 0;
+      }
+      #s5 .mark .cmd {
+        font-size: 64px;
+        font-weight: 700;
+        color: var(--text);
+      }
+      #s5 .mark .cmd .prompt {
+        font-weight: 400;
+      }
+      #s5 .mark .url {
+        font-size: 26px;
+        letter-spacing: 0.04em;
+        color: var(--muted);
+      }
+    </style>
+  </head>
+  <body>
+    <div
+      id="root"
+      data-composition-id="main"
+      data-start="0"
+      data-width="1920"
+      data-height="1080"
+      data-duration="24.5"
+    >
+      <div id="bg" class="bg" data-layout-ignore>
+        <div id="grid" class="grid"></div>
+        <div id="light" class="light"></div>
+        <div id="ghost" class="ghost" data-layout-allow-overflow>3/10</div>
+        <div id="vignette" class="vignette"></div>
+      </div>
+      <div id="footer" class="footer">
+        <div class="line" id="footer-line"></div>
+        <span>jev-curate · pattern #1 · data curation</span><span>github.com/ThyFriendlyFox/jev-curate</span>
+      </div>
+
+      <!-- Scene 1 — three slams (0–4.02) -->
+      <section id="s1" class="clip" data-start="0" data-duration="4.02" data-track-index="1">
+        <div class="stage" id="s1-stage">
+          <div class="stack">
+            <div class="slam" id="p1">Ten rows.</div>
+            <div class="slam gold" id="p2">Three pass.</div>
+            <div class="slam dim" id="p3">Seven do not.</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Scene 2 — the row (4.02–9.02) -->
+      <section id="s2" class="clip" data-start="4.02" data-duration="5" data-track-index="2">
+        <div class="stage" id="s2-stage">
+          <div class="kicker" id="s2-kicker"><span class="sq"></span><span>examples/corpus.jsonl · t006</span></div>
+          <div class="panel" id="rec">
+            <div class="bar"><span class="title">examples/corpus.jsonl</span><span>line 6</span></div>
+            <div class="body pre">{
+  <span class="k">"id"</span>: <span class="g">"t006"</span>,
+  <span class="k">"text"</span>: "[garbled hallucinated transcript] the the the subscription music playing silence",
+  <span class="k">"label"</span>: <span class="g">"billing"</span>
+}</div>
+          </div>
+          <div id="reasons">
+            <div class="reason" id="r1"><span class="k">transcript_valid  </span>yes=0.043 &lt; min_yes=0.75</div>
+            <div class="reason" id="r2"><span class="k">label_plausible   </span>yes=0.065 &lt; min_yes=0.7</div>
+          </div>
+          <div id="stamp" data-layout-allow-overlap data-layout-allow-occlusion>Rejected</div>
+        </div>
+      </section>
+
+      <!-- Scene 3 — the run (9.02–16.52) -->
+      <section id="s3" class="clip" data-start="9.02" data-duration="7.5" data-track-index="3">
+        <div class="stage" id="s3-stage">
+          <div class="kicker" id="s3-kicker"><span class="sq"></span><span>quick start · live Jev by default</span></div>
+          <div class="panel" id="term">
+            <div class="bar"><span class="title">bash — jev-curate</span></div>
+            <div class="body">
+              <div id="cmd"></div>
+              <div class="out" id="hdr"><span class="bold">jev-curate</span> rubric=<span class="g">'training_example_curation'</span> model=jev-latest mode=live (TypeSafe Jev) concurrency=1</div>
+            </div>
+          </div>
+          <div class="panel" id="audit">
+            <div class="bar"><span class="title">.output/run1/audit.jsonl</span><span id="tally">0 kept · 0 rejected</span></div>
+            <div class="body"><div id="alines"></div></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Scene 4 — the numbers (16.52–20.52) -->
+      <section id="s4" class="clip" data-start="16.52" data-duration="4" data-track-index="4">
+        <div class="stage" id="s4-stage">
+          <div class="kicker" id="s4-kicker"><span class="sq"></span><span>curation results · .output/run1</span></div>
+          <div class="figs">
+            <div class="fig gold" id="fig-1"><div class="num" id="num-1">0</div><div class="lab">kept → curated.jsonl</div></div>
+            <div class="fig" id="fig-2"><div class="num" id="num-2">0</div><div class="lab">rejected</div></div>
+            <div class="fig" id="fig-3"><div class="num" id="num-3">0%</div><div class="lab">keep rate</div></div>
+          </div>
+          <div class="files">
+            <div class="frow" id="frow-1"><span class="fn">curated.jsonl</span><span class="fd">Passed every required gate. Train on this.</span><span class="fc">3 rows</span></div>
+            <div class="frow" id="frow-2"><span class="fn">rejected.jsonl</span><span class="fd">Failed rows with a _curation record: which gate, Jev probabilities.</span><span class="fc">7 rows</span></div>
+            <div class="frow" id="frow-3"><span class="fn">audit.jsonl</span><span class="fd">One line per evaluated row, kept or not.</span><span class="fc">10 rows</span></div>
+            <div class="frow" id="frow-4"><span class="fn">errors.jsonl</span><span class="fd">API and parse failures. A re-run skips them unless --retry-errors.</span><span class="fc">0 rows</span></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Scene 5 — the rule (20.52–24.5) -->
+      <section id="s5" class="clip" data-start="20.52" data-duration="3.98" data-track-index="5">
+        <div class="stage" id="s5-stage">
+          <div class="stack">
+            <div class="slam" id="q1">Jev filters.</div>
+            <div class="slam gold" id="q2">It does not label.</div>
+          </div>
+          <div class="mark" id="s5-mark">
+            <span class="cmd"><span class="prompt">$ </span>jev-curate</span><span class="url">github.com/ThyFriendlyFox/jev-curate</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- audio -->
+      <audio
+        id="music"
+        data-timeline-role="music"
+        src="assets/music/happy-beats-business-moves-vol-1-by-ende-dot-app.mp3"
+        data-start="0"
+        data-duration="24.5"
+        data-track-index="10"
+        data-volume="0.34"
+        data-automation='{"version":1,"lanes":[{"target":"volume","points":[{"t":0,"v":0},{"t":0.4,"v":1},{"t":23.4,"v":1},{"t":24.5,"v":0}]}]}'
+      ></audio>
+      <audio id="sfx-slam1" src="assets/sfx/impact/impactSoft_medium_001.ogg" data-start="0.3" data-duration="0.4" data-track-index="14" data-volume="0.6"></audio>
+      <audio id="sfx-slam2" src="assets/sfx/impact/impactSoft_medium_003.ogg" data-start="1.5" data-duration="0.4" data-track-index="14" data-volume="0.6"></audio>
+      <audio id="sfx-slam3" src="assets/sfx/impact/impactSoft_medium_004.ogg" data-start="2.6" data-duration="0.4" data-track-index="14" data-volume="0.6"></audio>
+      <audio id="sfx-cut2" src="assets/sfx/impact/impactSoft_medium_000.ogg" data-start="4.02" data-duration="0.4" data-track-index="14" data-volume="0.5"></audio>
+      <!-- beat-locked: 5.53s the stamp -->
+      <audio id="sfx-stamp" src="assets/sfx/impact/impactBell_heavy_004.ogg" data-start="5.53" data-duration="1.6" data-track-index="16" data-volume="0.6"></audio>
+      <audio id="sfx-r1" src="assets/sfx/interface/click_003.ogg" data-start="6.03" data-duration="0.3" data-track-index="12" data-volume="0.45"></audio>
+      <audio id="sfx-r2" src="assets/sfx/interface/click_003.ogg" data-start="6.52" data-duration="0.3" data-track-index="12" data-volume="0.45"></audio>
+      <audio id="sfx-cut3" src="assets/sfx/impact/impactSoft_medium_002.ogg" data-start="9.02" data-duration="0.4" data-track-index="14" data-volume="0.5"></audio>
+      <audio id="sfx-typing" src="assets/sfx/typing.wav" data-start="9.1" data-duration="2.75" data-track-index="11" data-volume="0.5"></audio>
+      <audio id="sfx-enter" src="assets/sfx/interface/click_003.ogg" data-start="11.52" data-duration="0.3" data-track-index="12" data-volume="0.55"></audio>
+      <!-- beat-grid: audit lines every beat 12.02 → 16.52 -->
+      <audio id="sfx-a1" src="assets/sfx/interface/click_002.ogg" data-start="12.02" data-duration="0.3" data-track-index="12" data-volume="0.32"></audio>
+      <audio id="sfx-a2" src="assets/sfx/interface/click_005.ogg" data-start="12.52" data-duration="0.3" data-track-index="13" data-volume="0.32"></audio>
+      <audio id="sfx-a3" src="assets/sfx/interface/click_002.ogg" data-start="13.01" data-duration="0.3" data-track-index="12" data-volume="0.32"></audio>
+      <audio id="sfx-a4" src="assets/sfx/interface/click_005.ogg" data-start="13.51" data-duration="0.3" data-track-index="13" data-volume="0.32"></audio>
+      <audio id="sfx-a5" src="assets/sfx/interface/click_002.ogg" data-start="14.02" data-duration="0.3" data-track-index="12" data-volume="0.32"></audio>
+      <audio id="sfx-a6" src="assets/sfx/interface/click_005.ogg" data-start="14.52" data-duration="0.3" data-track-index="13" data-volume="0.32"></audio>
+      <audio id="sfx-a7" src="assets/sfx/interface/click_002.ogg" data-start="15.02" data-duration="0.3" data-track-index="12" data-volume="0.32"></audio>
+      <audio id="sfx-a8" src="assets/sfx/interface/click_005.ogg" data-start="15.52" data-duration="0.3" data-track-index="13" data-volume="0.32"></audio>
+      <audio id="sfx-a9" src="assets/sfx/interface/click_002.ogg" data-start="16.02" data-duration="0.3" data-track-index="12" data-volume="0.32"></audio>
+      <audio id="sfx-a10" src="assets/sfx/interface/click_005.ogg" data-start="16.52" data-duration="0.3" data-track-index="13" data-volume="0.32"></audio>
+      <!-- beat-locked: 17.02 / 17.52 / 18.02 strong cues — the three figures -->
+      <audio id="sfx-f1" src="assets/sfx/impact/impactPunch_medium_000.ogg" data-start="17.02" data-duration="0.45" data-track-index="14" data-volume="0.55"></audio>
+      <audio id="sfx-f2" src="assets/sfx/impact/impactPunch_medium_000.ogg" data-start="17.52" data-duration="0.45" data-track-index="15" data-volume="0.55"></audio>
+      <audio id="sfx-f3" src="assets/sfx/impact/impactPunch_medium_000.ogg" data-start="18.02" data-duration="0.45" data-track-index="14" data-volume="0.6"></audio>
+      <!-- beat-grid: file rows 18.52 → 20.02 -->
+      <audio id="sfx-w1" src="assets/sfx/impact/impactSoft_medium_000.ogg" data-start="18.52" data-duration="0.4" data-track-index="15" data-volume="0.45"></audio>
+      <audio id="sfx-w2" src="assets/sfx/impact/impactSoft_medium_001.ogg" data-start="19.02" data-duration="0.4" data-track-index="14" data-volume="0.45"></audio>
+      <audio id="sfx-w3" src="assets/sfx/impact/impactSoft_medium_002.ogg" data-start="19.52" data-duration="0.4" data-track-index="15" data-volume="0.45"></audio>
+      <audio id="sfx-w4" src="assets/sfx/impact/impactSoft_medium_003.ogg" data-start="20.02" data-duration="0.4" data-track-index="14" data-volume="0.45"></audio>
+      <!-- beat-locked: 21.01 and 23.02 strong cues — the two bells -->
+      <audio id="sfx-bell1" src="assets/sfx/impact/impactBell_heavy_000.ogg" data-start="21.01" data-duration="1.5" data-track-index="16" data-volume="0.55"></audio>
+      <audio id="sfx-snap2" src="assets/sfx/impact/impactSoft_medium_004.ogg" data-start="22.01" data-duration="0.4" data-track-index="14" data-volume="0.55"></audio>
+      <audio id="sfx-bell2" src="assets/sfx/impact/impactBell_heavy_003.ogg" data-start="23.02" data-duration="1.48" data-track-index="16" data-volume="0.5"></audio>
+    </div>
+
+    <script>
+      // ---------- typed command DOM from the shared schedule ----------
+      (function buildCommand() {
+        var cmd = document.getElementById("cmd");
+        var lineEls = [];
+        TYPING_LINES.forEach(function (line, li) {
+          var div = document.createElement("div");
+          div.className = "cmdline";
+          div.id = "cmdline-" + li;
+          var lead = document.createElement("span");
+          lead.className = li === 0 ? "prompt" : "indent c";
+          lead.textContent = li === 0 ? "$ " : "    ";
+          div.appendChild(lead);
+          var chars = [];
+          for (var i = 0; i < line.length; i++) {
+            var sp = document.createElement("span");
+            sp.className = "c";
+            sp.textContent = line[i];
+            div.appendChild(sp);
+            chars.push(sp);
+          }
+          var caret = document.createElement("span");
+          caret.className = "caret";
+          caret.id = "caret-" + li;
+          div.appendChild(caret);
+          cmd.appendChild(div);
+          lineEls.push({ lead: lead, chars: chars, caret: caret });
+        });
+        window.__cmdLines = lineEls;
+      })();
+
+      // ---------- audit records: real output of `jev-curate run` on examples/corpus.jsonl ----------
+      var AUDIT = [
+        ["t001", false, ["duplicate_substance"]],
+        ["t002", true, []],
+        ["t003", true, []],
+        ["t004", false, ["bucket_matches_content"]],
+        ["t005", false, ["is_ambiguous", "bucket_matches_content"]],
+        ["t006", false, ["transcript_valid", "label_plausible"]],
+        ["t007", true, []],
+        ["t008", false, ["bucket_matches_content"]],
+        ["t009", false, ["duplicate_substance"]],
+        ["t010", false, ["is_ambiguous", "bucket_matches_content"]],
+      ];
+      // beat-grid: one record per beat, 12.02 → 16.52 (vol-1 preset, 120.19 BPM)
+      var AUDIT_BEATS = [12.02, 12.52, 13.01, 13.51, 14.02, 14.52, 15.02, 15.52, 16.02, 16.52];
+      (function buildAudit() {
+        var host = document.getElementById("alines");
+        AUDIT.forEach(function (rec, i) {
+          var div = document.createElement("div");
+          div.className = "aline";
+          div.id = "aline-" + i;
+          var gates = rec[2].map(function (g) {
+            return '<span class="g">"' + g + '"</span>';
+          });
+          div.innerHTML =
+            '{<span class="k">"id"</span>: "' + rec[0] + '", <span class="k">"kept"</span>: <span class="' +
+            (rec[1] ? "ok" : "fail") + '">' + rec[1] + '</span>, <span class="k">"failed_gates"</span>: [' +
+            gates.join(", ") + '], <span class="k">"gates"</span>: {…}}';
+          host.appendChild(div);
+        });
+      })();
+
+      // ---------- timeline ----------
+      var DUR = 24.5;
+      var tl = gsap.timeline({ paused: true });
+
+      // ground
+      tl.fromTo("#footer-line", { scaleX: 0 }, { scaleX: 1, duration: 1.2, ease: "power2.out" }, 0.2);
+      tl.fromTo("#footer", { opacity: 0 }, { opacity: 1, duration: 0.8, ease: "none" }, 0.5);
+      tl.fromTo("#ghost", { y: 0 }, { y: -60, duration: DUR, ease: "none" }, 0);
+      tl.fromTo("#grid", { x: 0, y: 0 }, { x: -120, y: -60, duration: DUR, ease: "none" }, 0);
+
+      // audio-reactive: kick → gold light + grid brightness + square marks; RMS → vignette breathe
+      var lightEl = document.getElementById("light");
+      var gridEl = document.getElementById("grid");
+      var vigEl = document.getElementById("vignette");
+      var squares = gsap.utils.toArray(".sq");
+      var reactive = { t: 0 };
+      tl.to(
+        reactive,
+        {
+          t: DUR,
+          duration: DUR,
+          ease: "none",
+          onUpdate: function () {
+            var f = Math.min(AUDIO_DATA.totalFrames - 1, Math.max(0, Math.floor(reactive.t * AUDIO_DATA.fps)));
+            var fr = AUDIO_DATA.frames[f];
+            lightEl.style.opacity = (0.45 + fr.b * 0.55).toFixed(3);
+            gridEl.style.opacity = (0.22 + fr.b * 0.3).toFixed(3);
+            vigEl.style.opacity = (0.95 - fr.r * 0.25).toFixed(3);
+            var s = 1 + fr.b * 0.35;
+            for (var i = 0; i < squares.length; i++) squares[i].style.transform = "scale(" + s.toFixed(3) + ")";
+          },
+        },
+        0,
+      );
+
+      // helpers
+      function settle(sel, at) {
+        // hard cut with a camera settle: the scene lands from a 4% push
+        tl.fromTo(sel, { scale: 1.04 }, { scale: 1, duration: 0.7, ease: "power3.out" }, at);
+      }
+      function kicker(sel, at) {
+        tl.fromTo(sel, { x: -40, opacity: 0 }, { x: 0, opacity: 1, duration: 0.45, ease: "expo.out" }, at);
+      }
+      function slamScale(sel, at) {
+        tl.fromTo(sel, { scale: 1.5, filter: "blur(18px)", opacity: 0 }, { scale: 1, filter: "blur(0px)", opacity: 1, duration: 0.5, ease: "power4.out" }, at);
+      }
+      function slamSide(sel, at) {
+        tl.fromTo(sel, { x: -360, opacity: 0 }, { x: 0, opacity: 1, duration: 0.45, ease: "expo.out" }, at);
+      }
+      function slamRise(sel, at) {
+        tl.fromTo(sel, { y: 110, rotation: 4, opacity: 0 }, { y: 0, rotation: 0, opacity: 1, duration: 0.55, ease: "circ.out" }, at);
+      }
+
+      // ================= Scene 1 — three slams (0–4.02) =================
+      slamScale("#p1", 0.3);
+      slamSide("#p2", 1.5);
+      slamRise("#p3", 2.6);
+      tl.to("#s1 .stack", { scale: 1.015, duration: 0.8, ease: "sine.inOut", yoyo: true, repeat: 0 }, 3.2);
+
+      // ================= Scene 2 — the row (4.02–9.02) =================
+      settle("#s2-stage", 4.02);
+      kicker("#s2-kicker", 4.1);
+      tl.fromTo("#rec", { y: 60, opacity: 0 }, { y: 0, opacity: 1, duration: 0.6, ease: "power3.out" }, 4.05);
+      // beat-locked: 5.53s stamp
+      tl.fromTo("#stamp", { scale: 2.2, rotation: -2, opacity: 0 }, { scale: 1, rotation: -8, opacity: 1, duration: 0.35, ease: "power4.out" }, 5.53);
+      tl.set("#r1", { opacity: 1 }, 6.03);
+      tl.set("#r2", { opacity: 1 }, 6.52);
+
+      // ================= Scene 3 — the run (9.02–16.52) =================
+      settle("#s3-stage", 9.02);
+      kicker("#s3-kicker", 9.1);
+      tl.fromTo("#term", { y: -40, opacity: 0 }, { y: 0, opacity: 1, duration: 0.5, ease: "power3.out" }, 9.02);
+      tl.fromTo("#audit", { y: 50, opacity: 0 }, { y: 0, opacity: 1, duration: 0.6, ease: "expo.out" }, 9.15);
+      var lines = window.__cmdLines;
+      tl.set("#caret-0", { opacity: 1 }, 9.05);
+      TYPING_SCHEDULE.forEach(function (e) {
+        var t = e[0], li = e[1], ci = e[2];
+        if (ci === 0 && li > 0) {
+          tl.set(lines[li].lead, { opacity: 1 }, t);
+          tl.set("#caret-" + (li - 1), { opacity: 0 }, t);
+          tl.set("#caret-" + li, { opacity: 1 }, t);
+        }
+        tl.set(lines[li].chars[ci], { opacity: 1 }, t);
+      });
+      // beat-locked: 11.52 Enter → header
+      tl.set("#caret-3", { opacity: 0 }, 11.52);
+      tl.set("#hdr", { opacity: 1 }, 11.55);
+      AUDIT_BEATS.forEach(function (beat, i) {
+        tl.set("#aline-" + i, { opacity: 1 }, beat);
+      });
+      var tally = document.getElementById("tally");
+      var tallyState = { t: 0 };
+      tl.to(
+        tallyState,
+        {
+          t: DUR,
+          duration: DUR,
+          ease: "none",
+          onUpdate: function () {
+            var k = 0, r = 0;
+            for (var i = 0; i < AUDIT_BEATS.length; i++) {
+              if (tallyState.t >= AUDIT_BEATS[i]) {
+                if (AUDIT[i][1]) k++;
+                else r++;
+              }
+            }
+            tally.textContent = k + " kept · " + r + " rejected";
+          },
+        },
+        0,
+      );
+
+      // ================= Scene 4 — the numbers (16.52–20.52) =================
+      settle("#s4-stage", 16.52);
+      kicker("#s4-kicker", 16.6);
+      // beat-locked: 17.02 / 17.52 / 18.02 strong cues
+      var FIG_BEATS = [17.02, 17.52, 18.02];
+      var FIG_TARGET = [3, 7, 30];
+      FIG_BEATS.forEach(function (beat, i) {
+        tl.fromTo("#fig-" + (i + 1), { y: 70, opacity: 0 }, { y: 0, opacity: 1, duration: 0.45, ease: "power4.out" }, beat);
+        var el = document.getElementById("num-" + (i + 1));
+        var st = { v: 0 };
+        tl.to(
+          st,
+          {
+            v: FIG_TARGET[i],
+            duration: 0.9,
+            ease: "power3.out",
+            onUpdate: function () {
+              el.textContent = i === 2 ? Math.round(st.v) + ".0%" : String(Math.round(st.v));
+            },
+          },
+          beat,
+        );
+      });
+      // beat-grid: file rows 18.52 → 20.02
+      [18.52, 19.02, 19.52, 20.02].forEach(function (beat, i) {
+        tl.fromTo("#frow-" + (i + 1), { x: -60, opacity: 0 }, { x: 0, opacity: 1, duration: 0.4, ease: "expo.out" }, beat);
+      });
+
+      // ================= Scene 5 — the rule (20.52–24.5) =================
+      settle("#s5-stage", 20.52);
+      // beat-locked: 21.01 and 22.01 strong cues, 23.02 wordmark
+      slamScale("#q1", 21.01);
+      slamSide("#q2", 22.01);
+      tl.fromTo("#s5-mark", { y: 40, opacity: 0 }, { y: 0, opacity: 1, duration: 0.6, ease: "power3.out" }, 23.02);
+
+      window.__timelines["main"] = tl;
+    </script>
+  </body>
+</html>
