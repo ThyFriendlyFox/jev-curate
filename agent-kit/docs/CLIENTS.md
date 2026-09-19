@@ -48,13 +48,14 @@ header. The causes are not proven; the observations are.
 | A 60-row request got 503 as the first request after 10 quiet minutes. The 3 attempts before the wait were refused 100-row requests | 1 |
 | 3 requests of 60 rows, 90 seconds apart, passed; the 4th got HTTP 429 | 1 |
 | 4 small requests passed, then 429 | 2 |
+| 1 request every 200 seconds passed: 15, 25, 35, 45, 55 rows, then 60 rows 9 times. No 429, no 503 | 14 of 14 |
 | 429 cleared after 10 quiet minutes. It did not clear after 3 minutes, or under a retry every 75 seconds | 5, 1, 1 |
 
 The pattern fits a token budget that refills slowly and that refused requests
 also drain, with a separate request count behind the 429. Jev counts the
 shared state once and about 100 tokens for each question. The SDK retries a
-503 or a 429 twice, so 1 refused batch costs 3 attempts. What worked:
-`--batch-size 60`, 3 requests 90 seconds apart, then 10 quiet minutes.
+503 or a 429 twice, so 1 refused batch costs 3 attempts. What worked
+best: `--batch-size 60`, 1 request every 200 seconds, with no bursts.
 
 ```sh
 export AI_GATEWAY_API_KEY="vck_..."

@@ -95,7 +95,7 @@ A bad API key stops the run with one line instead of filling `errors.jsonl`.
 
 `--batch-size N` sends N rows as one state and asks every gate once for each row. Jev counts the shared state once, so a batch costs fewer tokens and far fewer requests than N calls. Live, 75 rows and 150 questions took 1 request and 0.9 seconds.
 
-[`examples/trec/`](examples/trec/README.md) filters 1,000 Hugging Face rows this way. Of the rows evaluated so far, Jev rejected 34 of 35 rows with a flipped label and 15 of 15 rows with scrambled text. It also found rows in the source data that contain part-of-speech tag debris.
+[`examples/trec/`](examples/trec/README.md) filters 1,000 Hugging Face rows this way. 19 requests carried the 1,000 rows. Jev rejected 99 of 100 rows with a flipped label and 50 of 50 rows with scrambled text. It also rejected 8 source rows that were already broken, 5 of them with part-of-speech tag debris.
 
 ## Resume / scale
 

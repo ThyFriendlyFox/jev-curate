@@ -49,7 +49,7 @@ Each case has the same shape.
 
 **Prepare.** Know the request limit of your key, and keep rows short. Put the text in a `state` field so the label stays out of the request.
 **Run.** `jev-curate run ... --batch-size 60 --timeout 120`.
-**Use.** 60 rows cost 1 request. Jev bills the shared state once and each question on top. A failed call puts all 60 ids in `errors.jsonl` for `--retry-errors`. `examples/trec/README.md` shows a 1,000-row run.
+**Use.** 60 rows cost 1 request. Jev bills the shared state once and each question on top. A failed call puts all 60 ids in `errors.jsonl` for `--retry-errors`. On the gateway free tier, send 1 request every 200 seconds. `examples/trec/README.md` shows a 1,000-row run.
 
 ## Curate at scale
 

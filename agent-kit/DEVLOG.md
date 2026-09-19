@@ -39,6 +39,21 @@ Evidence: <commit / tag / gate run / screenshot>
 
 ---
 
+## 2026-09-19 — Finished the 1,000-row Hugging Face run
+
+Two more 60-row requests got 503 after quiet waits, so I stopped the fixed
+loop. A small call passed seconds later: the refusals follow size, not count.
+I wrote an adaptive loop: start at 30 rows, halve on a 503, add 10 on a
+success, 1 request every 200 seconds. The first request was refused. The next
+14 all passed, 9 of them at 60 rows. A steady pace works where bursts fail. My
+earlier burst probes caused most of the refusals I then tried to explain. The
+run finished at 15:21: 1,000 rows in 19 requests. Jev rejected 99 of 100
+flipped labels and all 50 scrambled texts. It rejected 78 of 850 untouched
+rows. 8 of those are real faults in the source data; 70 are label
+disagreements, 21 of them under 0.6 confidence.
+
+Evidence: `python examples/trec/score.py .output/trec .output/trec/run1`; `examples/trec/README.md`.
+
 ## 2026-09-19 — Batched rows, and learned the free tier's real limits
 
 The human pointed out that 1 Jev request can carry many questions. I built

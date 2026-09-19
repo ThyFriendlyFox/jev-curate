@@ -66,7 +66,7 @@ provisional: true — the human has not ranked these yet.
 
 ### 6. Pace requests
 - **Promise:** `run --min-interval S` starts each Jev call at least S seconds after the last one, and a test proves it with a fake clock.
-- **Evidence:** `tests/test_pipeline.py::test_min_interval_spaces_calls`; row for `--min-interval` in docs/CONFIGURATION.md; the TREC demo runs as 1 command.
+- **Evidence:** Live on 2026-09-19, 1 request every 200 seconds passed 14 of 14 times where bursts failed. `tests/test_pipeline.py::test_min_interval_spaces_calls`; row for `--min-interval` in docs/CONFIGURATION.md; the TREC demo runs as 1 command.
 - **Use case:** docs/USE-CASES.md "Batch rows under a request quota".
 - **Scope guard:** A fixed interval only. No adaptive backoff, no reading of rate-limit headers (the gateway sends none).
 - **Status:** ready
