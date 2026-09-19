@@ -1,0 +1,1 @@
+jev-curate: pass/fail gates on every training row with TypeSafe Jev. Keep what passes, audit the rest. Jev filters. It does not label.

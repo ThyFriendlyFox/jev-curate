@@ -1,0 +1,834 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <title>jev-curate — brag</title>
+    <script src="assets/vendor/gsap.min.js"></script>
+    <script src="assets/audio-data.js"></script>
+    <script src="assets/typing-schedule.js"></script>
+    <style>
+      :root {
+        --cream: #faf9f5;
+        --tile: #efe9de;
+        --tile-strong: #ece3d4;
+        --ink: #141413;
+        --ink-70: rgba(20, 20, 19, 0.7);
+        --ink-60: rgba(20, 20, 19, 0.62);
+        --ink-12: rgba(20, 20, 19, 0.12);
+        --coral: #cc785c;
+        --coral-text: #a8542f;
+        --navy: #181715;
+        --navy-elev: #252320;
+        --cream-14: rgba(250, 249, 245, 0.14);
+        --cream-60: rgba(250, 249, 245, 0.62);
+        --teal: #5db8a6;
+        --amber: #e8a55a;
+        --ok: #5db872;
+        --fail: #e06666;
+        --serif: "EB Garamond", Georgia, serif;
+        --sans: Inter, system-ui, sans-serif;
+        --mono: "JetBrains Mono", monospace;
+      }
+      body {
+        margin: 0;
+        background: var(--cream);
+        color: var(--ink);
+        font-family: var(--sans);
+      }
+      #root {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        background: var(--cream);
+      }
+      .clip {
+        position: absolute;
+        inset: 0;
+      }
+      .stage {
+        position: absolute;
+        inset: 0;
+        opacity: 1;
+      }
+
+      /* ---------- persistent ground ---------- */
+      .bg {
+        position: absolute;
+        inset: 0;
+      }
+      .glow {
+        position: absolute;
+        left: 760px;
+        top: 80px;
+        width: 1400px;
+        height: 1000px;
+        border-radius: 50%;
+        background: radial-gradient(closest-side, var(--tile-strong), rgba(236, 227, 212, 0));
+        opacity: 0.55;
+      }
+      .ghost {
+        position: absolute;
+        left: 60px;
+        bottom: -70px;
+        font-family: var(--mono);
+        font-size: 300px;
+        font-weight: 700;
+        letter-spacing: -0.04em;
+        color: var(--ink);
+        opacity: 0.045;
+        white-space: nowrap;
+      }
+      .rule-top,
+      .rule-bottom {
+        position: absolute;
+        left: 80px;
+        right: 80px;
+        height: 1px;
+        background: var(--ink-12);
+        transform-origin: left center;
+      }
+      .rule-top {
+        top: 128px;
+      }
+      .rule-bottom {
+        top: 990px;
+      }
+      .footer {
+        position: absolute;
+        right: 80px;
+        top: 1010px;
+        font-family: var(--mono);
+        font-size: 22px;
+        letter-spacing: 0.02em;
+        color: var(--ink-60);
+      }
+      .footer-left {
+        position: absolute;
+        left: 80px;
+        top: 1010px;
+        font-family: var(--mono);
+        font-size: 22px;
+        letter-spacing: 0.02em;
+        color: var(--ink-60);
+      }
+
+      /* ---------- kicker ---------- */
+      .kicker {
+        position: absolute;
+        left: 80px;
+        top: 80px;
+        display: flex;
+        align-items: center;
+        gap: 18px;
+        font-family: var(--mono);
+        font-size: 26px;
+        font-weight: 500;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        color: var(--coral-text);
+      }
+      .spike {
+        display: inline-block;
+        color: var(--coral);
+        font-size: 30px;
+        line-height: 1;
+        transform-origin: 50% 50%;
+      }
+
+      /* ---------- code surface ---------- */
+      .win {
+        position: absolute;
+        background: var(--navy);
+        border: 1px solid var(--cream-14);
+        border-radius: 8px;
+        overflow: hidden;
+        color: var(--cream);
+      }
+      .bar {
+        height: 48px;
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        padding: 0 20px;
+        background: var(--navy-elev);
+        border-bottom: 1px solid var(--cream-14);
+        font-family: var(--mono);
+        font-size: 22px;
+        color: var(--cream-60);
+      }
+      .bar .title {
+        flex: 1;
+      }
+      .dots i {
+        display: inline-block;
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background: var(--cream-14);
+        margin-right: 8px;
+      }
+      .body {
+        padding: 26px 32px;
+        font-family: var(--mono);
+        font-size: 24px;
+        line-height: 34px;
+        overflow-wrap: anywhere;
+      }
+      .pre,
+      .cmdline,
+      .out,
+      .aline {
+        white-space: pre-wrap;
+      }
+      .k {
+        color: var(--cream-60);
+      }
+      .s {
+        color: var(--teal);
+      }
+      .n {
+        color: var(--amber);
+      }
+      .ok {
+        color: var(--ok);
+      }
+      .fail {
+        color: var(--fail);
+      }
+      .hl {
+        color: var(--coral);
+      }
+
+      /* ---------- scene 1 ---------- */
+      #s1 .headline {
+        position: absolute;
+        left: 80px;
+        top: 330px;
+        width: 860px;
+        font-family: var(--serif);
+        font-size: 100px;
+        line-height: 1.06;
+        letter-spacing: -0.018em;
+        color: var(--ink);
+      }
+      #s1 .headline .w {
+        display: inline-block;
+        opacity: 0;
+        margin-right: 0.22em;
+      }
+      #s1 .sub {
+        position: absolute;
+        left: 82px;
+        top: 590px;
+        width: 860px;
+        font-family: var(--serif);
+        font-style: italic;
+        font-size: 50px;
+        line-height: 1.2;
+        letter-spacing: -0.012em;
+        color: var(--ink-70);
+      }
+      #s1-card {
+        left: 980px;
+        top: 350px;
+        width: 860px;
+      }
+      #s1-card .body {
+        font-size: 26px;
+        line-height: 40px;
+        padding: 30px 36px 34px;
+      }
+
+      /* ---------- scene 2 ---------- */
+      #term {
+        left: 80px;
+        top: 160px;
+        width: 1040px;
+        height: 820px;
+      }
+      #audit {
+        left: 1160px;
+        top: 160px;
+        width: 680px;
+        height: 820px;
+      }
+      #audit .body {
+        font-size: 19px;
+        line-height: 27px;
+        padding: 20px 24px;
+      }
+      .aline {
+        opacity: 0;
+        margin-bottom: 6px;
+      }
+      .tally {
+        font-size: 20px;
+      }
+      .cmdline {
+        min-height: 34px;
+      }
+      .cmdline .c {
+        opacity: 0;
+      }
+      .prompt {
+        color: var(--cream-60);
+      }
+      .caret {
+        display: inline-block;
+        width: 13px;
+        height: 26px;
+        vertical-align: -4px;
+        background: var(--cream);
+        opacity: 0;
+      }
+      .out {
+        opacity: 0;
+      }
+      .tline {
+        opacity: 0;
+        white-space: pre;
+      }
+      .tline.hlrow {
+        border-radius: 4px;
+      }
+      .bold {
+        font-weight: 700;
+      }
+
+      /* ---------- scene 3 ---------- */
+      #s3 .headline {
+        position: absolute;
+        left: 80px;
+        top: 190px;
+        width: 1760px;
+        font-family: var(--serif);
+        font-size: 84px;
+        line-height: 1.06;
+        letter-spacing: -0.018em;
+      }
+      #s3 .headline .w {
+        display: inline-block;
+        opacity: 0;
+        margin-right: 0.22em;
+      }
+      .cards {
+        position: absolute;
+        left: 80px;
+        top: 420px;
+        width: 1760px;
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 40px;
+      }
+      .card {
+        background: var(--tile);
+        border: 1px solid var(--ink-12);
+        border-radius: 12px;
+        padding: 30px 32px 34px;
+        height: 420px;
+        box-sizing: border-box;
+        opacity: 0;
+        transform-origin: 50% 100%;
+        display: flex;
+        flex-direction: column;
+      }
+      .card .fname {
+        font-family: var(--mono);
+        font-size: 27px;
+        font-weight: 500;
+        letter-spacing: 0.02em;
+        color: var(--ink);
+        padding-bottom: 18px;
+        border-bottom: 1px solid var(--ink-12);
+      }
+      .card .lockup {
+        display: flex;
+        align-items: baseline;
+        gap: 14px;
+        margin-top: 26px;
+      }
+      .card .fig {
+        font-family: var(--serif);
+        font-size: 128px;
+        line-height: 0.95;
+        letter-spacing: -0.025em;
+        font-variant-numeric: tabular-nums;
+        min-width: 130px;
+      }
+      .card .unit {
+        font-family: var(--mono);
+        font-size: 26px;
+        font-weight: 500;
+        color: var(--ink-60);
+      }
+      .card .desc {
+        margin-top: auto;
+        font-family: var(--sans);
+        font-size: 25px;
+        line-height: 1.42;
+        color: var(--ink-70);
+      }
+      .card .desc code {
+        font-family: var(--mono);
+        font-size: 23px;
+      }
+
+      /* ---------- scene 4 ---------- */
+      #s4 .mark {
+        position: absolute;
+        left: 80px;
+        top: 350px;
+        font-family: var(--mono);
+        font-size: 170px;
+        font-weight: 700;
+        letter-spacing: -0.04em;
+        line-height: 1;
+        color: var(--ink);
+        opacity: 0;
+      }
+      #s4 .mark .prompt {
+        color: var(--ink-60);
+        font-weight: 400;
+      }
+      #s4 .corule {
+        position: absolute;
+        left: 80px;
+        top: 585px;
+        width: 1760px;
+        height: 3px;
+        background: var(--coral);
+        transform-origin: left center;
+      }
+      #s4 .tag {
+        position: absolute;
+        left: 82px;
+        top: 640px;
+        width: 1700px;
+        font-family: var(--serif);
+        font-style: italic;
+        font-size: 66px;
+        line-height: 1.15;
+        letter-spacing: -0.012em;
+        color: var(--ink);
+        opacity: 0;
+      }
+      #s4 .meta {
+        position: absolute;
+        left: 82px;
+        top: 800px;
+        font-family: var(--mono);
+        font-size: 26px;
+        letter-spacing: 0.02em;
+        color: var(--ink-60);
+        opacity: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div
+      id="root"
+      data-composition-id="main"
+      data-start="0"
+      data-width="1920"
+      data-height="1080"
+      data-duration="24.5"
+    >
+      <!-- persistent ground: glow + ghost type breathe with the music; hairlines frame every scene -->
+      <div id="bg" class="bg" data-layout-ignore>
+        <div id="glow" class="glow"></div>
+        <div id="ghost" class="ghost" data-layout-allow-overflow>curated.jsonl</div>
+        <div id="rule-top" class="rule-top"></div>
+        <div id="rule-bottom" class="rule-bottom"></div>
+      </div>
+      <div id="footer-left" class="footer-left">jev-curate · pattern #1 · data curation</div>
+      <div id="footer" class="footer">github.com/ThyFriendlyFox/jev-curate</div>
+
+      <!-- Scene 1 — the row (0–5.0, crossfade out 4.5–5.0) -->
+      <section id="s1" class="clip" data-start="0" data-duration="5" data-track-index="1">
+        <div class="stage" id="s1-stage">
+          <div class="kicker" id="s1-kicker" data-layout-allow-overlap>
+            <span class="spike" data-layout-allow-overlap>✱</span><span data-layout-allow-overlap>examples/corpus.jsonl · line 6</span>
+          </div>
+          <h1 class="headline" id="s1-headline">
+            <span class="w">This</span><span class="w">row</span><span class="w">is</span
+            ><span class="w">labeled</span><span class="w">billing.</span>
+          </h1>
+          <p class="sub" id="s1-sub">It is about to be training data.</p>
+          <div id="s1-cardwrap">
+            <div class="win" id="s1-card">
+              <div class="bar">
+                <span class="dots"><i></i><i></i><i></i></span
+                ><span class="title">examples/corpus.jsonl</span><span>jsonl</span>
+              </div>
+              <div class="body pre" id="s1-json">{
+  <span class="k">"id"</span>: <span class="s">"t006"</span>,
+  <span class="k">"text"</span>: <span class="s">"[garbled hallucinated transcript] the the the subscription music playing silence"</span>,
+  <span class="k">"label"</span>: <span class="hl">"billing"</span>
+}</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Scene 2 — one command (4.5–16.9) -->
+      <section id="s2" class="clip" data-start="4.5" data-duration="12.4" data-track-index="2">
+        <div class="stage" id="s2-stage">
+          <div class="kicker" id="s2-kicker" data-layout-allow-overlap>
+            <span class="spike" data-layout-allow-overlap>✱</span><span data-layout-allow-overlap>quick start · live Jev by default</span>
+          </div>
+          <div class="win" id="term">
+            <div class="bar">
+              <span class="dots"><i></i><i></i><i></i></span
+              ><span class="title">bash — jev-curate</span>
+            </div>
+            <div class="body">
+              <div id="cmd"></div>
+              <div class="out" id="hdr"><span class="bold">jev-curate</span> rubric=<span class="s">'training_example_curation'</span> model=jev-latest mode=live (TypeSafe Jev) concurrency=<span class="n">1</span></div>
+              <div class="out" id="blank"> </div>
+              <div id="tbl">
+                <div class="tline bold">        Curation results        </div>
+                <div class="tline k">┏━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━┓</div>
+                <div class="tline"><span class="k">┃</span> <span class="bold">Metric</span>               <span class="k">┃</span> <span class="bold">Value</span> <span class="k">┃</span></div>
+                <div class="tline k">┡━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━┩</div>
+                <div class="tline"><span class="k">│</span> Processed            <span class="k">│</span>    <span class="n">10</span> <span class="k">│</span></div>
+                <div class="tline"><span class="k">│</span> Skipped (resume)     <span class="k">│</span>     <span class="n">0</span> <span class="k">│</span></div>
+                <div class="tline"><span class="k">│</span> Kept → curated.jsonl <span class="k">│</span>     <span class="n">3</span> <span class="k">│</span></div>
+                <div class="tline"><span class="k">│</span> Rejected             <span class="k">│</span>     <span class="n">7</span> <span class="k">│</span></div>
+                <div class="tline"><span class="k">│</span> Errors               <span class="k">│</span>     <span class="n">0</span> <span class="k">│</span></div>
+                <div class="tline hlrow" id="keeprate"><span class="k">│</span> Keep rate            <span class="k">│</span> <span class="n">30.0%</span> <span class="k">│</span></div>
+                <div class="tline k">└──────────────────────┴───────┘</div>
+              </div>
+            </div>
+          </div>
+          <div class="win" id="audit">
+            <div class="bar">
+              <span class="title">.output/run1/audit.jsonl</span><span class="tally" id="tally">0 kept · 0 rejected</span>
+            </div>
+            <div class="body" id="alines"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Scene 3 — four files (16.4–21.3) -->
+      <section id="s3" class="clip" data-start="16.4" data-duration="4.9" data-track-index="3">
+        <div class="stage" id="s3-stage">
+          <div class="kicker" id="s3-kicker" data-layout-allow-overlap>
+            <span class="spike" data-layout-allow-overlap>✱</span><span data-layout-allow-overlap>output dir · .output/run1</span>
+          </div>
+          <h2 class="headline" id="s3-headline">
+            <span class="w">Four</span><span class="w">files.</span><span class="w">Every</span
+            ><span class="w">row</span><span class="w">lands</span><span class="w">in</span
+            ><span class="w">one.</span>
+          </h2>
+          <div class="cards">
+            <div class="card" id="card-1">
+              <div class="fname">curated.jsonl</div>
+              <div class="lockup"><span class="fig" id="fig-1">0</span><span class="unit">rows</span></div>
+              <div class="desc">Passed every required gate. Train on this.</div>
+            </div>
+            <div class="card" id="card-2">
+              <div class="fname">rejected.jsonl</div>
+              <div class="lockup"><span class="fig" id="fig-2">0</span><span class="unit">rows</span></div>
+              <div class="desc">Failed rows with a <code>_curation</code> record: which gate, Jev probabilities.</div>
+            </div>
+            <div class="card" id="card-3">
+              <div class="fname">audit.jsonl</div>
+              <div class="lockup"><span class="fig" id="fig-3">0</span><span class="unit">rows</span></div>
+              <div class="desc">One line per evaluated row, kept or not.</div>
+            </div>
+            <div class="card" id="card-4">
+              <div class="fname">errors.jsonl</div>
+              <div class="lockup"><span class="fig" id="fig-4">0</span><span class="unit">rows</span></div>
+              <div class="desc">API and parse failures. A re-run skips them unless <code>--retry-errors</code>.</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Scene 4 — wordmark (20.8–24.5) -->
+      <section id="s4" class="clip" data-start="20.8" data-duration="3.7" data-track-index="4">
+        <div class="stage" id="s4-stage">
+          <div class="mark" id="s4-mark"><span class="prompt">$ </span>jev-curate</div>
+          <div class="corule" id="s4-rule"></div>
+          <p class="tag" id="s4-tag">Filter with Jev. Train on real outcome labels.</p>
+          <div class="meta" id="s4-meta">MIT · Python 3.10 · TypeSafe Jev API · pass/fail gates from a YAML rubric</div>
+        </div>
+      </section>
+
+      <!-- audio: music bed on 10, SFX on 11+ -->
+      <audio
+        id="music"
+        data-timeline-role="music"
+        src="assets/music/happy-beats-business-moves-vol-12-by-ende-dot-app.mp3"
+        data-start="0"
+        data-duration="24.5"
+        data-track-index="10"
+        data-volume="0.32"
+        data-automation='{"version":1,"lanes":[{"target":"volume","points":[{"t":0,"v":0},{"t":0.6,"v":1},{"t":23.2,"v":1},{"t":24.5,"v":0}]}]}'
+      ></audio>
+      <audio id="sfx-card-land" src="assets/sfx/impact/impactSoft_medium_001.ogg" data-start="0.25" data-duration="0.5" data-track-index="14" data-volume="0.6"></audio>
+      <audio id="sfx-sub-bong" src="assets/sfx/interface/bong_001.ogg" data-start="2.7" data-duration="0.5" data-track-index="15" data-volume="0.45"></audio>
+      <audio id="sfx-typing" src="assets/sfx/typing.wav" data-start="4.9" data-duration="3.6" data-track-index="11" data-volume="0.5"></audio>
+      <audio id="sfx-enter" src="assets/sfx/interface/click_003.ogg" data-start="8.19" data-duration="0.3" data-track-index="12" data-volume="0.55"></audio>
+      <!-- beat-grid: audit lines on every beat 8.74 → 13.64 -->
+      <audio id="sfx-a1" src="assets/sfx/interface/click_002.ogg" data-start="8.74" data-duration="0.3" data-track-index="12" data-volume="0.32"></audio>
+      <audio id="sfx-a2" src="assets/sfx/interface/click_005.ogg" data-start="9.29" data-duration="0.3" data-track-index="13" data-volume="0.32"></audio>
+      <audio id="sfx-a3" src="assets/sfx/interface/click_002.ogg" data-start="9.83" data-duration="0.3" data-track-index="12" data-volume="0.32"></audio>
+      <audio id="sfx-a4" src="assets/sfx/interface/click_005.ogg" data-start="10.37" data-duration="0.3" data-track-index="13" data-volume="0.32"></audio>
+      <audio id="sfx-a5" src="assets/sfx/interface/click_002.ogg" data-start="10.93" data-duration="0.3" data-track-index="12" data-volume="0.32"></audio>
+      <audio id="sfx-a6" src="assets/sfx/interface/click_005.ogg" data-start="11.46" data-duration="0.3" data-track-index="13" data-volume="0.32"></audio>
+      <audio id="sfx-a7" src="assets/sfx/interface/click_002.ogg" data-start="12.02" data-duration="0.3" data-track-index="12" data-volume="0.32"></audio>
+      <audio id="sfx-a8" src="assets/sfx/interface/click_005.ogg" data-start="12.55" data-duration="0.3" data-track-index="13" data-volume="0.32"></audio>
+      <audio id="sfx-a9" src="assets/sfx/interface/click_002.ogg" data-start="13.11" data-duration="0.3" data-track-index="12" data-volume="0.36"></audio>
+      <audio id="sfx-a10" src="assets/sfx/interface/click_005.ogg" data-start="13.64" data-duration="0.3" data-track-index="13" data-volume="0.36"></audio>
+      <audio id="sfx-table" src="assets/sfx/impact/impactSoft_medium_002.ogg" data-start="14.2" data-duration="0.5" data-track-index="14" data-volume="0.55"></audio>
+      <!-- beat-grid: cards on every beat 17.47 → 19.10 -->
+      <audio id="sfx-c1" src="assets/sfx/impact/impactSoft_medium_000.ogg" data-start="17.47" data-duration="0.5" data-track-index="14" data-volume="0.5"></audio>
+      <audio id="sfx-c2" src="assets/sfx/impact/impactSoft_medium_003.ogg" data-start="18.02" data-duration="0.5" data-track-index="15" data-volume="0.5"></audio>
+      <audio id="sfx-c3" src="assets/sfx/impact/impactSoft_medium_004.ogg" data-start="18.56" data-duration="0.5" data-track-index="14" data-volume="0.5"></audio>
+      <audio id="sfx-c4" src="assets/sfx/impact/impactSoft_medium_001.ogg" data-start="19.1" data-duration="0.5" data-track-index="15" data-volume="0.55"></audio>
+      <!-- beat-locked: 21.28s wordmark -->
+      <audio id="sfx-bell" src="assets/sfx/impact/impactBell_heavy_000.ogg" data-start="21.28" data-duration="2.5" data-track-index="16" data-volume="0.55"></audio>
+    </div>
+
+    <script>
+      // ---------- build the typed command DOM from the shared schedule ----------
+      (function buildCommand() {
+        var cmd = document.getElementById("cmd");
+        var lineEls = [];
+        TYPING_LINES.forEach(function (line, li) {
+          var div = document.createElement("div");
+          div.className = "cmdline";
+          div.id = "cmdline-" + li;
+          var lead = document.createElement("span");
+          lead.className = li === 0 ? "prompt" : "indent c";
+          lead.textContent = li === 0 ? "$ " : "    ";
+          div.appendChild(lead);
+          var chars = [];
+          for (var i = 0; i < line.length; i++) {
+            var sp = document.createElement("span");
+            sp.className = "c";
+            sp.textContent = line[i];
+            div.appendChild(sp);
+            chars.push(sp);
+          }
+          var caret = document.createElement("span");
+          caret.className = "caret";
+          caret.id = "caret-" + li;
+          div.appendChild(caret);
+          cmd.appendChild(div);
+          lineEls.push({ lead: lead, chars: chars, caret: caret });
+        });
+        window.__cmdLines = lineEls;
+      })();
+
+      // ---------- audit records: real output of `jev-curate run` on examples/corpus.jsonl ----------
+      var AUDIT = [
+        ["t001", false, ["duplicate_substance"]],
+        ["t002", true, []],
+        ["t003", true, []],
+        ["t004", false, ["bucket_matches_content"]],
+        ["t005", false, ["is_ambiguous", "bucket_matches_content"]],
+        ["t006", false, ["transcript_valid", "label_plausible"]],
+        ["t007", true, []],
+        ["t008", false, ["bucket_matches_content"]],
+        ["t009", false, ["duplicate_substance"]],
+        ["t010", false, ["is_ambiguous", "bucket_matches_content"]],
+      ];
+      // beat-grid: one audit line per beat, 8.74 → 13.64 (vol-12 preset, 109.96 BPM)
+      var AUDIT_BEATS = [8.74, 9.29, 9.83, 10.37, 10.93, 11.46, 12.02, 12.55, 13.11, 13.64];
+      (function buildAudit() {
+        var host = document.getElementById("alines");
+        AUDIT.forEach(function (rec, i) {
+          var div = document.createElement("div");
+          div.className = "aline";
+          div.id = "aline-" + i;
+          var gates = rec[2].map(function (g) {
+            return '<span class="s">"' + g + '"</span>';
+          });
+          div.innerHTML =
+            '{<span class="k">"id"</span>: <span class="s">"' +
+            rec[0] +
+            '"</span>, <span class="k">"kept"</span>: <span class="' +
+            (rec[1] ? "ok" : "fail") +
+            '">' +
+            rec[1] +
+            '</span>, <span class="k">"failed_gates"</span>: [' +
+            gates.join(", ") +
+            '], <span class="k">"gates"</span>: {…}}';
+          host.appendChild(div);
+        });
+      })();
+
+      // ---------- timeline ----------
+      var DUR = 24.5;
+      var tl = gsap.timeline({ paused: true });
+
+      // --- persistent ground ---
+      tl.fromTo("#rule-top", { scaleX: 0 }, { scaleX: 1, duration: 1.1, ease: "power2.out" }, 0.1);
+      tl.fromTo("#rule-bottom", { scaleX: 0 }, { scaleX: 1, duration: 1.1, ease: "power2.out" }, 0.25);
+      tl.fromTo("#footer", { opacity: 0 }, { opacity: 1, duration: 0.8, ease: "none" }, 0.6);
+      tl.fromTo("#footer-left", { opacity: 0 }, { opacity: 1, duration: 0.8, ease: "none" }, 0.8);
+      tl.fromTo("#ghost", { x: 0 }, { x: -90, duration: DUR, ease: "none" }, 0);
+      // footer chrome yields to the wordmark scene
+      tl.to("#footer", { opacity: 0, duration: 0.4, ease: "power1.in" }, 20.8);
+      tl.to("#footer-left", { opacity: 0, duration: 0.4, ease: "power1.in" }, 20.8);
+
+      // --- audio-reactive: kick → ✱ scale, RMS → glow / ghost presence (pre-extracted data, sampled by time) ---
+      var spikes = gsap.utils.toArray(".spike");
+      var glowEl = document.getElementById("glow");
+      var ghostEl = document.getElementById("ghost");
+      var reactive = { t: 0 };
+      tl.to(
+        reactive,
+        {
+          t: DUR,
+          duration: DUR,
+          ease: "none",
+          onUpdate: function () {
+            var f = Math.min(AUDIO_DATA.totalFrames - 1, Math.max(0, Math.floor(reactive.t * AUDIO_DATA.fps)));
+            var fr = AUDIO_DATA.frames[f];
+            var s = 1 + fr.b * 0.09;
+            for (var i = 0; i < spikes.length; i++) spikes[i].style.transform = "scale(" + s.toFixed(3) + ")";
+            glowEl.style.opacity = (0.45 + fr.r * 0.4).toFixed(3);
+            ghostEl.style.opacity = (0.035 + fr.b * 0.03).toFixed(3);
+          },
+        },
+        0,
+      );
+
+      // helper: soft crossfade on a scene's inner stage (never on the .clip itself)
+      function fadeIn(sel, at) {
+        tl.fromTo(sel, { opacity: 0 }, { opacity: 1, duration: 0.5, ease: "power1.out" }, at);
+      }
+      function fadeOut(sel, at) {
+        tl.to(sel, { opacity: 0, duration: 0.5, ease: "power1.in" }, at);
+      }
+      // helper: kicker slides in from the left
+      function kicker(sel, at) {
+        tl.fromTo(sel, { x: -28, opacity: 0 }, { x: 0, opacity: 1, duration: 0.5, ease: "expo.out" }, at);
+      }
+      // helper: waterfall word arrival (binary opacity via set, whip from below)
+      function waterfall(words, t0) {
+        var F = 1 / 60;
+        var t = t0;
+        words.forEach(function (w, i) {
+          var last = i === words.length - 1;
+          var y = i === 0 ? 76 : last ? 64 : 46;
+          var d = i === 0 ? 0.19 : last ? 0.17 : 0.15;
+          tl.set(w, { opacity: 1, y: y }, t);
+          tl.to(w, { y: 0, duration: d, ease: "power4.out" }, t);
+          t = t + d - (i === 0 ? -2 * F : F);
+        });
+        return t;
+      }
+
+      // ================= Scene 1 — the row (0–5.0) =================
+      kicker("#s1-kicker", 0.15);
+      tl.fromTo("#s1-cardwrap", { y: 140, opacity: 0 }, { y: 0, opacity: 1, duration: 0.85, ease: "power3.out" }, 0.25);
+      // idle float on the inner card (separate element from the entrance wrapper)
+      tl.to("#s1-card", { y: -7, duration: 1.7, ease: "sine.inOut", yoyo: true, repeat: Math.max(0, Math.floor((5 - 1.2) / 1.7) - 1) }, 1.2);
+      waterfall(gsap.utils.toArray("#s1-headline .w"), 1.15);
+      tl.fromTo("#s1-sub", { opacity: 0, y: 26 }, { opacity: 1, y: 0, duration: 0.65, ease: "power2.out" }, 2.7);
+      fadeOut("#s1-stage", 4.5);
+
+      // ================= Scene 2 — one command (4.5–16.9) =================
+      fadeIn("#s2-stage", 4.5);
+      kicker("#s2-kicker", 4.65);
+      tl.fromTo("#term", { y: 44, opacity: 0 }, { y: 0, opacity: 1, duration: 0.7, ease: "power3.out" }, 4.6);
+      tl.fromTo("#audit", { x: 48, opacity: 0 }, { x: 0, opacity: 1, duration: 0.7, ease: "expo.out" }, 4.8);
+
+      // typed command: every character at its scheduled time (shared with assets/sfx/typing.wav)
+      var lines = window.__cmdLines;
+      tl.set("#caret-0", { opacity: 1 }, 4.75);
+      TYPING_SCHEDULE.forEach(function (e) {
+        var t = e[0], li = e[1], ci = e[2];
+        if (ci === 0 && li > 0) {
+          tl.set(lines[li].lead, { opacity: 1 }, t);
+          tl.set("#caret-" + (li - 1), { opacity: 0 }, t);
+          tl.set("#caret-" + li, { opacity: 1 }, t);
+        }
+        tl.set(lines[li].chars[ci], { opacity: 1 }, t);
+      });
+      // beat-locked: 8.19s Enter → the CLI header line prints
+      tl.set("#caret-3", { opacity: 0 }, 8.19);
+      tl.set("#hdr", { opacity: 1 }, 8.22);
+      tl.set("#blank", { opacity: 1 }, 8.22);
+
+      // audit.jsonl fills one line per beat; tally in the title bar updates with it
+      var tally = document.getElementById("tally");
+      AUDIT_BEATS.forEach(function (beat, i) {
+        tl.set("#aline-" + i, { opacity: 1 }, beat);
+      });
+      // seek-safe tally: also drive it from time so a backwards seek shows the right count
+      var tallyState = { t: 0 };
+      tl.to(
+        tallyState,
+        {
+          t: DUR,
+          duration: DUR,
+          ease: "none",
+          onUpdate: function () {
+            var k = 0, r = 0;
+            for (var i = 0; i < AUDIT_BEATS.length; i++) {
+              if (tallyState.t >= AUDIT_BEATS[i]) {
+                if (AUDIT[i][1]) k++;
+                else r++;
+              }
+            }
+            tally.textContent = k + " kept · " + r + " rejected";
+          },
+        },
+        0,
+      );
+
+      // beat-aligned: 14.20s the Rich results table prints line by line
+      var tlines = gsap.utils.toArray("#tbl .tline");
+      tlines.forEach(function (el, i) {
+        tl.set(el, { opacity: 1 }, 14.2 + i * 0.055);
+      });
+      tl.fromTo("#keeprate", { backgroundColor: "rgba(250,249,245,0)" }, { backgroundColor: "rgba(250,249,245,0.10)", duration: 0.5, ease: "power2.out" }, 15.2);
+      fadeOut("#s2-stage", 16.4);
+
+      // ================= Scene 3 — four files (16.4–21.3) =================
+      fadeIn("#s3-stage", 16.4);
+      kicker("#s3-kicker", 16.55);
+      waterfall(gsap.utils.toArray("#s3-headline .w"), 16.7);
+      // beat-grid: card 1 at 17.47, card 2 at 18.02, card 3 at 18.56, card 4 at 19.10
+      var CARD_BEATS = [17.47, 18.02, 18.56, 19.1];
+      var CARD_COUNTS = [3, 7, 10, 0];
+      var COUNT_END = 19.66; // beat-locked: 19.66s strong cue — all four figures land together
+      CARD_BEATS.forEach(function (beat, i) {
+        tl.fromTo("#card-" + (i + 1), { y: 70, opacity: 0, scale: 0.97 }, { y: 0, opacity: 1, scale: 1, duration: 0.6, ease: "power3.out" }, beat);
+        var fig = document.getElementById("fig-" + (i + 1));
+        var state = { v: 0 };
+        tl.to(
+          state,
+          {
+            v: CARD_COUNTS[i],
+            duration: Math.max(0.35, COUNT_END - beat),
+            ease: "power3.out",
+            onUpdate: function () {
+              fig.textContent = String(Math.round(state.v));
+            },
+          },
+          beat,
+        );
+      });
+      fadeOut("#s3-stage", 20.8);
+
+      // ================= Scene 4 — wordmark (20.8–24.5) =================
+      fadeIn("#s4-stage", 20.8);
+      // beat-locked: 21.28s wordmark lands with the bell
+      tl.fromTo("#s4-mark", { opacity: 0, y: 34, scale: 0.97 }, { opacity: 1, y: 0, scale: 1, duration: 0.7, ease: "expo.out" }, 21.28);
+      tl.fromTo("#s4-rule", { scaleX: 0 }, { scaleX: 1, duration: 0.7, ease: "power2.out" }, 21.6);
+      // beat-locked: 22.37s strong cue — tagline
+      tl.fromTo("#s4-tag", { opacity: 0, y: 22 }, { opacity: 1, y: 0, duration: 0.6, ease: "power2.out" }, 22.37);
+      tl.fromTo("#s4-meta", { opacity: 0 }, { opacity: 1, duration: 0.5, ease: "none" }, 22.93);
+
+      window.__timelines["main"] = tl;
+    </script>
+  </body>
+</html>

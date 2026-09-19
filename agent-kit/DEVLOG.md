@@ -70,3 +70,9 @@ The kit's `ADAPTERS.md` is now `CLIENTS.md`, because the seam here is the
 Jev client (live or mock).
 
 Evidence: gate `40_agent_kit` green; `agent-kit/ROADMAP.md` Feature Queue.
+
+## 2026-09-19 — Made a 24.5 s launch video with the /brag skill
+
+I ran the `/brag` skill (latent-spaces/brag) on this repo. It plans a short video and hands a brief to Hyperframes, which renders HTML to MP4. The video opens on row `t006` of `examples/corpus.jsonl`, types the README quick-start command, fills `audit.jsonl` one record per beat, prints the CLI's results table, and ends on the 4 output files. Every figure comes from `jev-curate run --mock` on the example corpus: 10 processed, 3 kept, 7 rejected. The terminal shows the live-mode header the CLI prints; the numbers are the mock's. `npx hyperframes check` passed with 0 errors and 257/257 contrast checks. The output lives in `brag-output/` with the plan, the brief, the composition, the poster, and the share copy. The music bed is not committed; `brag-output/.gitignore` says how to restore it.
+
+Evidence: `brag-output/brag.mp4` (735 frames, 1920x1080, 24.5 s), `brag-output/brag-plan.md`.
