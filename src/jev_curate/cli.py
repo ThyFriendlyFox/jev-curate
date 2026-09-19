@@ -16,6 +16,16 @@ from jev_curate.rubric import load_rubric
 
 console = Console()
 
+_MODES = {
+    "live": "live (TypeSafe Jev)",
+    "gateway": "live (Jev on Vercel AI Gateway)",
+    "mock": "mock (tests only)",
+}
+
+
+def _key_var(gateway: bool) -> str:
+    return "AI_GATEWAY_API_KEY" if gateway else "TYPESAFE_API_KEY"
+
 
 @click.group()
 @click.version_option(package_name="jev-curate")
@@ -31,6 +41,11 @@ def main() -> None:
     "--mock",
     is_flag=True,
     help="Use mock Jev (tests only). Default: live API when TYPESAFE_API_KEY is set.",
+)
+@click.option(
+    "--gateway",
+    is_flag=True,
+    help="Call live Jev through Vercel AI Gateway. Needs AI_GATEWAY_API_KEY.",
 )
 @click.option("--limit", type=int, default=None, help="Evaluate at most N rows not already done.")
 @click.option(
@@ -50,20 +65,24 @@ def run(
     input_path: Path,
     output_dir: Path,
     mock: bool,
+    gateway: bool,
     limit: int | None,
     concurrency: int,
     retry_errors: bool,
 ) -> None:
     """Run curation gates over JSONL; write curated.jsonl and rejected.jsonl."""
     loaded = load_rubric(rubric)
+    if mock and gateway:
+        raise click.UsageError("--mock and --gateway cannot be used together.")
     live = not mock
-    if live and not os.environ.get("TYPESAFE_API_KEY"):
+    key_var = _key_var(gateway)
+    if live and not os.environ.get(key_var):
         raise click.ClickException(
-            "Live Jev requires TYPESAFE_API_KEY. Export your key or pass --mock for offline tests."
+            f"Live Jev requires {key_var}. Export your key or pass --mock for offline tests."
         )
 
-    client = make_client(live=live)
-    mode = "live (TypeSafe Jev)" if live else "mock (tests only)"
+    client = make_client(live=live, gateway=gateway)
+    mode = _MODES["mock" if mock else "gateway" if gateway else "live"]
     console.print(
         f"[bold]jev-curate[/] rubric={loaded.name!r} model={loaded.model} "
         f"mode={mode} concurrency={concurrency}"
@@ -83,7 +102,7 @@ def run(
     try:
         stats = pipeline.run()
     except TypeSafeAuthenticationError as exc:
-        raise click.ClickException(f"TypeSafe rejected the API key: {exc}") from exc
+        raise click.ClickException(f"{key_var} was rejected: {exc}") from exc
     summary = summarize(output_dir)
 
     table = Table(title="Curation results")
@@ -132,12 +151,17 @@ def validate_rubric_cmd(rubric: Path) -> None:
 
 
 @main.command("check-jev")
-def check_jev() -> None:
-    """Verify TYPESAFE_API_KEY and a minimal live Jev call."""
+@click.option(
+    "--gateway",
+    is_flag=True,
+    help="Check Jev through Vercel AI Gateway. Needs AI_GATEWAY_API_KEY.",
+)
+def check_jev(gateway: bool) -> None:
+    """Verify the API key and a minimal live Jev call."""
     from typesafe_sdk import Noul
 
     try:
-        client = make_client(live=True)
+        client = make_client(live=True, gateway=gateway)
         response = client.evaluate(
             state="Hello, this is a connectivity check.",
             questions={"ok": Noul(instructions="This is a coherent English sentence")},

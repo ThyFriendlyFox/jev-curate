@@ -20,6 +20,18 @@ jev-curate run \
   --output .output/run1
 ```
 
+### With a Vercel AI Gateway key
+
+Jev is also served by [Vercel AI Gateway](https://vercel.com/ai-gateway/models/jev) as `typesafe-ai/jev`. With a gateway key and no TypeSafe key, add `--gateway`:
+
+```bash
+export AI_GATEWAY_API_KEY="vck_..."
+jev-curate check-jev --gateway
+jev-curate run --gateway --rubric examples/rubric.yaml --input examples/corpus.jsonl --output .output/run1
+```
+
+It is the same live Jev, with the same gates and thresholds. The gateway's free tier rate-limits: rows that get HTTP 429 land in `errors.jsonl`, and a later run with `--retry-errors` picks them up.
+
 ### Outputs
 
 | File | Contents |
@@ -72,6 +84,7 @@ Curation runs at scale (~$21 per million 500-token examples at $0.042/MTok). Moc
 | `--limit N` | none | Evaluate at most N rows this run (skipped rows do not count) |
 | `--concurrency N` | 1 | N parallel Jev calls; one thread writes the files |
 | `--retry-errors` | off | Re-evaluate ids that appear only in `errors.jsonl` |
+| `--gateway` | off | Call live Jev through Vercel AI Gateway with `AI_GATEWAY_API_KEY` |
 | `--mock` | off | Mock client, tests only |
 
 A bad API key stops the run with one line instead of filling `errors.jsonl`.

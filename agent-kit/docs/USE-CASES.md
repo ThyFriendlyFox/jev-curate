@@ -39,6 +39,12 @@ Each case has the same shape.
 **Run.** `jev-curate run ... --retry-errors`.
 **Use.** Only the errored ids are re-evaluated. Succeeding rows move to `curated` or `rejected`.
 
+## Run with a Vercel AI Gateway key
+
+**Prepare.** Export `AI_GATEWAY_API_KEY`. No TypeSafe key is needed.
+**Run.** `jev-curate run --gateway --rubric rubric.yaml --input corpus.jsonl --output out/`.
+**Use.** The same live Jev answers the gates, billed to the Vercel account. On the free tier, rate-limited rows land in `errors.jsonl`; run again later with `--retry-errors`.
+
 ## Curate at scale
 
 **Prepare.** Know your TypeSafe rate limit.

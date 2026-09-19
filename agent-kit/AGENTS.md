@@ -19,7 +19,8 @@ Requires Python 3.10.
 
 1. **Live Jev is the default.** `--mock` exists for tests only. No production
    code path imports `jev_curate.mock_client`; `make_client(live=True)` is the
-   only way to reach the API.
+   only way to reach the API. `--gateway` is live Jev by another route
+   (Vercel AI Gateway), never a substitute model.
 2. **Jev filters; it does not label.** The pipeline never writes a Jev answer
    into a training field. `_curation` is the only field it adds to a row, and
    the row's own fields stay untouched.
@@ -40,8 +41,8 @@ Requires Python 3.10.
    typed per gate kind (`noul`, `choice`, `score`). Code never hardcodes a
    threshold for a named gate, except the name-based default in
    `_default_noul_rule` for gates with no `pass:` block.
-9. **Secrets enter through the environment only.** `TYPESAFE_API_KEY` is read
-   from the environment; no key in code, fixtures, or docs.
+9. **Secrets enter through the environment only.** `TYPESAFE_API_KEY` and
+   `AI_GATEWAY_API_KEY` are read from the environment; no key in code, fixtures, or docs.
 
 ## Landmine map
 
@@ -50,6 +51,7 @@ Requires Python 3.10.
 | `pipeline.py::_extract_state` | Merges row metadata (like `label`) into the state so `label_plausible` gates can see it. Drop it and label gates silently judge without the label. |
 | `gates.py::_default_noul_rule` | A gate with no `pass:` block gets its direction from its name (`ambiguous`, `duplicate`, `bad` → `max_yes`). Renaming a gate flips its default. Always write a `pass:` block. |
 | `pipeline.py::load_done_ids` | `errors.jsonl` counts as done. A transient API failure is never retried unless the user passes `--retry-errors`. |
+| `gateway_client.py::_to_native_answer` | Choice and score confidence comes from `providerMetadata.typesafe.confidence`. Never fill a missing confidence from `probabilities`; `min_confidence` gates would then pass on a number Jev did not give. |
 | `mock_client.py` | Regex heuristics tuned to `examples/corpus.jsonl`. Editing the corpus changes what gate `20_mock_run` sees. Mock probabilities mean nothing outside tests. |
 | `cli.py --limit` | Counts rows evaluated this run, not lines read. Skipped rows do not count. |
 | `verify/gates/50_docs_cover_options.sh` | A new CLI flag or rubric key with no row in `docs/CONFIGURATION.md` turns verify red. Add the row in the same commit. |

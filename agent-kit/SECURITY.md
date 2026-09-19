@@ -9,8 +9,8 @@
   coordinated disclosure after a fix ships.
 - Supported: latest minor release, unless stated otherwise.
 - Secrets never enter the repo — not code, config, fixtures, or history.
-  CI uses Actions secrets (`TYPESAFE_API_KEY` for the live gate, when
-  set); local dev uses an untracked `.env` or an exported variable.
+  CI uses Actions secrets (`TYPESAFE_API_KEY` or `AI_GATEWAY_API_KEY` for the live
+  gate, when set); local dev uses an untracked `.env` or an exported variable.
 - For the agent: security-shaped work overrides normal routing. A
   security fix may ship out-of-band as a patch release at any time,
   without waiting for the weekly cycle.

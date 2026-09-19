@@ -6,7 +6,7 @@ jev-curate has no config file. It reads 3 sources, in this order of precedence:
 |---|---|---|
 | CLI flags | the command line | everything |
 | Rubric YAML | the file passed to `--rubric` | environment |
-| Environment | `TYPESAFE_*` variables read by `typesafe-sdk` | defaults |
+| Environment | `TYPESAFE_*` variables read by `typesafe-sdk`; `AI_GATEWAY_API_KEY` | defaults |
 
 A rubric that does not parse stops the command with the YAML error. A rubric with no gates stops with "Rubric must define at least one gate". Neither writes output.
 
@@ -19,7 +19,8 @@ A rubric that does not parse stops the command with the YAML error. A rubric wit
 | `--rubric` | path | required | Rubric YAML |
 | `--input` | path | required | Input JSONL, one row per line |
 | `--output` | path | required | Output dir; created if missing; re-runs resume from it |
-| `--mock` | flag | off | Use the mock client. Tests only. Without it, `TYPESAFE_API_KEY` is required |
+| `--mock` | flag | off | Use the mock client. Tests only. Without it, a live key is required |
+| `--gateway` | flag | off | Call live Jev through Vercel AI Gateway. Needs `AI_GATEWAY_API_KEY` in place of `TYPESAFE_API_KEY`. Not valid with `--mock` |
 | `--limit` | int | none | Evaluate at most N rows this run. Skipped rows do not count |
 | `--concurrency` | int ≥ 1 | `1` | Parallel Jev calls. One thread writes the files |
 | `--retry-errors` | flag | off | Re-evaluate ids that appear only in `errors.jsonl` |
@@ -38,13 +39,18 @@ A rubric that does not parse stops the command with the YAML error. A rubric wit
 
 ### `jev-curate check-jev`
 
-No flags. Makes 1 live call. Needs `TYPESAFE_API_KEY`.
+Makes 1 live call. Needs `TYPESAFE_API_KEY`, or `AI_GATEWAY_API_KEY` with `--gateway`.
+
+| Field | Type | Default | Use |
+|---|---|---|---|
+| `--gateway` | flag | off | Make the call through Vercel AI Gateway |
 
 ## Environment
 
 | Field | Type | Default | Use |
 |---|---|---|---|
-| `TYPESAFE_API_KEY` | string | none | Required for live runs and `check-jev` |
+| `TYPESAFE_API_KEY` | string | none | Required for live runs and `check-jev` without `--gateway` |
+| `AI_GATEWAY_API_KEY` | string | none | Vercel AI Gateway key. Required with `--gateway` |
 | `TYPESAFE_BASE_URL` | URL | `https://api.typesafe.ai` | API root, read by the SDK |
 | `TYPESAFE_DEFAULT_MODEL` | string | `jev-latest` | SDK default model; the rubric's `model` overrides it per call |
 | `TYPESAFE_LOG_LEVEL` | string | none | SDK logging level (`debug`, `info`, ...) |

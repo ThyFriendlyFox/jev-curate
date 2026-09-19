@@ -39,6 +39,22 @@ Evidence: <commit / tag / gate run / screenshot>
 
 ---
 
+## 2026-09-19 — Reached live Jev through Vercel AI Gateway
+
+The human holds a Vercel AI Gateway key, not a TypeSafe key. The gateway
+serves Jev as `typesafe-ai/jev`, but it does not speak `/v1/systemone`. Vercel
+documents the TypeScript AI SDK only, so I read the wire format from the
+`@ai-sdk/gateway` 4.0.87 source and confirmed it with 1 live request. I wrote
+`GatewayJevClient`: a transport that rewrites each `typesafe-sdk` request and
+reply, so retries and error types stay the SDK's. The first live call in this
+repo's history worked: `check-jev --gateway` returned `ok.noul=0.990`. A bad
+key stopped the run with 1 line. The first version named `api.typesafe.ai` in
+gateway errors; I fixed that with a response hook. The free tier broke the
+full run: 4 of 10 rows evaluated, then 429 for every call. My own probing
+used part of that quota. Gate 30 now skips loudly on a gateway 429.
+
+Evidence: `tests/test_gateway_client.py` (9 tests); `./verify/verify.sh` green with 30 tests; `.output/gateway1` holds the 4 live rows.
+
 <!-- Entries below, newest first. -->
 
 ## 2026-09-19 — Ran the Ralph loop until the README was true

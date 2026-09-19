@@ -47,9 +47,13 @@ def evaluate_rubric(client: JevClient, rubric: CurationRubric, state: Any):
     ).answers
 
 
-def make_client(*, live: bool, api_key: str | None = None) -> JevClient:
+def make_client(*, live: bool, gateway: bool = False, api_key: str | None = None) -> JevClient:
     if not live:
         from jev_curate.mock_client import MockJevClient
 
         return MockJevClient()
+    if gateway:
+        from jev_curate.gateway_client import GatewayJevClient
+
+        return GatewayJevClient(api_key=api_key)
     return LiveJevClient(api_key=api_key)

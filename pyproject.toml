@@ -13,6 +13,7 @@ authors = [{ name = "jev-curate contributors" }]
 keywords = ["jev", "typesafe", "data-curation", "filtering", "training-data"]
 dependencies = [
     "typesafe-sdk>=0.7.0",
+    "httpx2>=2.0.0",
     "pyyaml>=6.0",
     "click>=8.1",
     "rich>=13.0",

@@ -22,7 +22,7 @@ is the default; mock exists for tests only.
 | 5 | A kept row passed every required gate; a rejected row names the failed gates in `_curation` | gate `20_mock_run` |
 | 6 | A re-run over the same output dir skips ids already in the 3 result files | gate `20_mock_run` |
 | 7 | `jev-curate stats --output <dir>` summarizes a prior run | gate `20_mock_run` |
-| 8 | `jev-curate check-jev` makes one live call when `TYPESAFE_API_KEY` is set | gate `30_live_jev` (skips loudly without a key) |
+| 8 | `jev-curate check-jev` makes one live call when `TYPESAFE_API_KEY` is set, and `check-jev --gateway` when `AI_GATEWAY_API_KEY` is set | gate `30_live_jev` (skips loudly without a key) |
 | 9 | Live is the default; `run` without a key fails with a plain message | test `test_run_without_key_fails` |
 | 10 | Rubric gates support `noul`, `choice`, `score` with the documented pass rules, `pass_mode`, and `required: false` | tests in `tests/test_gates.py` |
 | 11 | A gate Jev did not answer fails closed (required → reject) | test `test_missing_answer_fails_required_gate` |
@@ -31,6 +31,7 @@ is the default; mock exists for tests only.
 | 14 | The agent kit is installed with no placeholders and a ready roadmap | gate `40_agent_kit` |
 | 15 | Every CLI flag and rubric key is documented | gate `50_docs_cover_options` |
 | 16 | CI runs the same `verify.sh` as local | `.github/workflows/ci.yml` (proven by hand: the file calls the script) |
+| 17 | `--gateway` reaches live Jev through Vercel AI Gateway with the same answers, confidence, and fail-fast on a bad key | tests in `tests/test_gateway_client.py`; gate `30_live_jev` with `AI_GATEWAY_API_KEY` |
 
 ## Out of scope for this loop
 

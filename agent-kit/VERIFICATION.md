@@ -11,7 +11,7 @@
 |---|---|
 | `10_rubric.sh` | `examples/rubric.yaml` parses and `validate-rubric` lists its gates |
 | `20_mock_run.sh` | The README quick start works end to end in mock mode: 4 output files, counts add up, every kept row passed, a re-run skips every id, `stats` works |
-| `30_live_jev.sh` | `check-jev` makes 1 live call. Skips loudly when `TYPESAFE_API_KEY` is unset |
+| `30_live_jev.sh` | `check-jev` makes 1 live call per key that is set (`TYPESAFE_API_KEY`, `AI_GATEWAY_API_KEY`). Skips loudly when neither is set, or when the gateway answers HTTP 429 (free-tier quota) |
 | `40_agent_kit.sh` | No placeholders remain in the kit; `ROADMAP.md` has a north star and ≥3 ready items |
 | `50_docs_cover_options.sh` | Every CLI flag and rubric key has a row in `docs/CONFIGURATION.md` |
 

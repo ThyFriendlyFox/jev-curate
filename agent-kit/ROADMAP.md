@@ -68,6 +68,7 @@ provisional: true — the human has not ranked these yet.
 
 | Week | Feature | Release | Evidence |
 |---|---|---|---|
+| 2026-09-19 | Vercel AI Gateway client: `run --gateway` and `check-jev --gateway` reach live Jev with `AI_GATEWAY_API_KEY` | unreleased | `tests/test_gateway_client.py` (9 tests); live `check-jev --gateway` returned `ok.noul=0.990`; `ralph/GOAL.md` line 17 |
 | 2026-09-19 | Make the README true: gated quick start, concurrency, `--retry-errors`, fail-closed gates, fail-fast on bad key, agent kit, Ralph loop | unreleased | `./verify/verify.sh` green on branch `claude/ralph-loop-implementation-meir2m`; `ralph/GOAL.md` checklist |
 
 ## Explicitly not doing
@@ -78,4 +79,6 @@ provisional: true — the human has not ranked these yet.
 
 ## Queue changes
 
+- 2026-09-19 — The human asked for a Vercel AI Gateway client, because their Jev access is a gateway key. It shipped the same day, ahead of the queue. Promise: `run --gateway` evaluates the rubric through live Jev on the gateway and a rejected key stops the run. Use case: docs/USE-CASES.md "Run with a Vercel AI Gateway key". The 4 ready items keep their order.
+- 2026-09-19 — The first live run showed the gateway free tier returns 429 after about 4 requests. This raises the value of item 3 (retry policy). I did not reorder; the human has not ranked the queue.
 - 2026-09-19 — Queue seeded during SETUP.md from README gaps (`merge`, cost, retry policy, sample). Provisional until the human ranks it.

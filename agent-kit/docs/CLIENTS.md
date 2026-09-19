@@ -1,18 +1,44 @@
 # Clients
 
-A client answers a rubric's questions about one row's state. jev-curate has 2
-clients. Select one with the `--mock` flag: absent means live.
+A client answers a rubric's questions about one row's state. jev-curate has 3
+clients. No flag means live. `--gateway` and `--mock` select the other 2.
 
 ## live
 
 `LiveJevClient` calls `POST /v1/systemone` through `typesafe-sdk`. It is the
-default and the only client for real runs. It needs `TYPESAFE_API_KEY`. The
+default. It needs `TYPESAFE_API_KEY`. The
 SDK retries HTTP 408, 429, and 5xx twice with backoff inside a 30 second
 budget. An authentication error propagates and stops the run.
 
 ```sh
 export TYPESAFE_API_KEY="sk-..."
 jev-curate run --rubric R --input I --output O
+```
+
+## gateway
+
+`GatewayJevClient` calls the same live Jev through Vercel AI Gateway, for an
+account that holds a gateway key and no TypeSafe key. It needs
+`AI_GATEWAY_API_KEY`. The gateway has its own protocol
+(`POST /v4/ai/evaluation-model`), so `GatewayTransport` rewrites each
+`typesafe-sdk` request and reply. Retries, timeouts, and error types stay the
+SDK's. An authentication error propagates and stops the run.
+
+| Native | Gateway |
+|---|---|
+| question `type: noul` | `type: boolean` |
+| answer `noul` | `probability` |
+| answer `confidence` | `providerMetadata.typesafe.confidence.<gate>` |
+| score `legend` | rebuilt from the gate's `criteria` |
+| model `jev-latest` | `typesafe-ai/jev`; a model with `/` is sent as is |
+
+A choice or score reply with no confidence is an error row, not a guess. The
+gateway's free tier returns HTTP 429 after about 4 requests. Those rows land in
+`errors.jsonl`; run again later with `--retry-errors`.
+
+```sh
+export AI_GATEWAY_API_KEY="vck_..."
+jev-curate run --gateway --rubric R --input I --output O
 ```
 
 ## mock
@@ -43,4 +69,4 @@ class JevClient(ABC):
 - `evaluate` may be called from several threads at once when `--concurrency`
   is above 1. Do not share mutable state without a lock.
 - Register it in `make_client`, add its section here, its flag in
-  `CONFIGURATION.md`, and a test in `tests/test_pipeline.py`.
+  `CONFIGURATION.md`, and a test that runs it through `CurationPipeline`.

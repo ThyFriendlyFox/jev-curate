@@ -63,3 +63,48 @@ def test_check_jev_without_key_fails_plainly():
     assert result.exit_code != 0
     assert "TYPESAFE_API_KEY" in result.output
     assert "Traceback" not in result.output
+
+
+def test_run_gateway_without_key_fails():
+    result = CliRunner().invoke(
+        main,
+        [
+            "run",
+            "--gateway",
+            "--rubric",
+            str(ROOT / "examples/rubric.yaml"),
+            "--input",
+            str(ROOT / "examples/corpus.jsonl"),
+            "--output",
+            "out",
+        ],
+        env={"AI_GATEWAY_API_KEY": "", "TYPESAFE_API_KEY": "sk-unused"},
+    )
+    assert result.exit_code != 0
+    assert "AI_GATEWAY_API_KEY" in result.output
+
+
+def test_mock_and_gateway_are_exclusive():
+    result = CliRunner().invoke(
+        main,
+        [
+            "run",
+            "--mock",
+            "--gateway",
+            "--rubric",
+            str(ROOT / "examples/rubric.yaml"),
+            "--input",
+            str(ROOT / "examples/corpus.jsonl"),
+            "--output",
+            "out",
+        ],
+    )
+    assert result.exit_code != 0
+    assert "cannot be used together" in result.output
+
+
+def test_check_jev_gateway_without_key_fails_plainly():
+    result = CliRunner().invoke(main, ["check-jev", "--gateway"], env={"AI_GATEWAY_API_KEY": ""})
+    assert result.exit_code != 0
+    assert "AI_GATEWAY_API_KEY" in result.output
+    assert "Traceback" not in result.output
