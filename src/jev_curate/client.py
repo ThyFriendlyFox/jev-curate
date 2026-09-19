@@ -19,8 +19,7 @@ class JevClient(ABC):
         questions: dict[str, Question],
         *,
         model: str,
-    ):
-        ...
+    ): ...
 
 
 class LiveJevClient(JevClient):

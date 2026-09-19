@@ -95,7 +95,9 @@ class CurationRubric:
         return out
 
 
-def _parse_pass_rule(kind: str, raw: dict[str, Any] | None) -> NoulPassRule | ChoicePassRule | ScorePassRule | None:
+def _parse_pass_rule(
+    kind: str, raw: dict[str, Any] | None
+) -> NoulPassRule | ChoicePassRule | ScorePassRule | None:
     if not raw:
         return None
     if kind == "noul":

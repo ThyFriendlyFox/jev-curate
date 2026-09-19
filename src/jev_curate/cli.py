@@ -8,6 +8,7 @@ from pathlib import Path
 import click
 from rich.console import Console
 from rich.table import Table
+from typesafe_sdk import TypeSafeAPIError, TypeSafeAuthenticationError, TypeSafeError
 
 from jev_curate.client import make_client
 from jev_curate.pipeline import CurationPipeline, PipelineConfig, summarize
@@ -31,8 +32,28 @@ def main() -> None:
     is_flag=True,
     help="Use mock Jev (tests only). Default: live API when TYPESAFE_API_KEY is set.",
 )
-@click.option("--limit", type=int, default=None)
-def run(rubric: Path, input_path: Path, output_dir: Path, mock: bool, limit: int | None) -> None:
+@click.option("--limit", type=int, default=None, help="Evaluate at most N rows not already done.")
+@click.option(
+    "--concurrency",
+    type=click.IntRange(min=1),
+    default=1,
+    show_default=True,
+    help="Parallel Jev calls. Respect your TypeSafe rate limit.",
+)
+@click.option(
+    "--retry-errors",
+    is_flag=True,
+    help="Re-evaluate ids that are only in errors.jsonl instead of skipping them.",
+)
+def run(
+    rubric: Path,
+    input_path: Path,
+    output_dir: Path,
+    mock: bool,
+    limit: int | None,
+    concurrency: int,
+    retry_errors: bool,
+) -> None:
     """Run curation gates over JSONL; write curated.jsonl and rejected.jsonl."""
     loaded = load_rubric(rubric)
     live = not mock
@@ -43,13 +64,26 @@ def run(rubric: Path, input_path: Path, output_dir: Path, mock: bool, limit: int
 
     client = make_client(live=live)
     mode = "live (TypeSafe Jev)" if live else "mock (tests only)"
-    console.print(f"[bold]jev-curate[/] rubric={loaded.name!r} model={loaded.model} mode={mode}")
+    console.print(
+        f"[bold]jev-curate[/] rubric={loaded.name!r} model={loaded.model} "
+        f"mode={mode} concurrency={concurrency}"
+    )
 
     pipeline = CurationPipeline(
-        PipelineConfig(rubric=loaded, input_path=input_path, output_dir=output_dir, limit=limit),
+        PipelineConfig(
+            rubric=loaded,
+            input_path=input_path,
+            output_dir=output_dir,
+            limit=limit,
+            concurrency=concurrency,
+            retry_errors=retry_errors,
+        ),
         client=client,
     )
-    stats = pipeline.run()
+    try:
+        stats = pipeline.run()
+    except TypeSafeAuthenticationError as exc:
+        raise click.ClickException(f"TypeSafe rejected the API key: {exc}") from exc
     summary = summarize(output_dir)
 
     table = Table(title="Curation results")
@@ -102,11 +136,18 @@ def check_jev() -> None:
     """Verify TYPESAFE_API_KEY and a minimal live Jev call."""
     from typesafe_sdk import Noul
 
-    client = make_client(live=True)
-    response = client.evaluate(
-        state="Hello, this is a connectivity check.",
-        questions={"ok": Noul(instructions="This is a coherent English sentence")},
-        model="jev-latest",
-    )
+    try:
+        client = make_client(live=True)
+        response = client.evaluate(
+            state="Hello, this is a connectivity check.",
+            questions={"ok": Noul(instructions="This is a coherent English sentence")},
+            model="jev-latest",
+        )
+    except RuntimeError as exc:
+        raise click.ClickException(str(exc)) from exc
+    except TypeSafeAPIError as exc:
+        raise click.ClickException(f"Live Jev call failed (HTTP {exc.status}): {exc}") from exc
+    except TypeSafeError as exc:
+        raise click.ClickException(f"Live Jev call failed: {exc}") from exc
     p = response.answers["ok"].noul  # type: ignore[union-attr]
     console.print(f"Live Jev OK — model={response.model} ok.noul={p:.3f}")

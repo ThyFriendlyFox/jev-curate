@@ -100,6 +100,17 @@ def _eval_gate(
     )
 
 
+def _missing_gate(gate: GateSpec) -> GateResult:
+    # Jev returned no answer for this gate (dropped or unrecognized type). Fail closed.
+    return GateResult(
+        name=gate.name,
+        passed=False,
+        required=gate.required,
+        reason="no answer from Jev",
+        answer={"type": "missing"},
+    )
+
+
 def evaluate_curation(
     example_id: str,
     rubric: CurationRubric,
@@ -108,27 +119,19 @@ def evaluate_curation(
 ) -> CurationVerdict:
     results: list[GateResult] = []
     failed_required: list[str] = []
-    passed_optional = 0
-    failed_optional = 0
 
-    gate_by_name = {g.name: g for g in rubric.gates}
-    for name, answer in answers.items():
-        gate = gate_by_name[name]
-        gr = _eval_gate(gate, answer, row)
+    for gate in rubric.gates:
+        answer = answers.get(gate.name)
+        gr = _missing_gate(gate) if answer is None else _eval_gate(gate, answer, row)
         results.append(gr)
-        if not gr.passed:
-            if gr.required:
-                failed_required.append(name)
-            else:
-                failed_optional += 1
-        elif not gr.required:
-            passed_optional += 1
+        if gr.required and not gr.passed:
+            failed_required.append(gate.name)
 
     if rubric.pass_mode == "all":
         kept = len(failed_required) == 0
     else:
         # any: keep if at least one required gate passed (unusual; for exploratory rubrics)
-        required_results = [r for r in results if gate_by_name[r.name].required]
+        required_results = [r for r in results if r.required]
         kept = any(r.passed for r in required_results) if required_results else True
 
     return CurationVerdict(
