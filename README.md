@@ -91,6 +91,12 @@ Curation runs at scale (~$21 per million 500-token examples at $0.042/MTok). Moc
 
 A bad API key stops the run with one line instead of filling `errors.jsonl`.
 
+## Batch rows in one request
+
+`--batch-size N` sends N rows as one state and asks every gate once for each row. Jev counts the shared state once, so a batch costs fewer tokens and far fewer requests than N calls. Live, 75 rows and 150 questions took 1 request and 0.9 seconds.
+
+[`examples/trec/`](examples/trec/README.md) filters 1,000 Hugging Face rows this way. Of the rows evaluated so far, Jev rejected 34 of 35 rows with a flipped label and 15 of 15 rows with scrambled text. It also found rows in the source data that contain part-of-speech tag debris.
+
 ## Resume / scale
 
 The pipeline skips any `id` already written to `curated.jsonl`, `rejected.jsonl`, or `errors.jsonl` (pass `--retry-errors` to re-evaluate the errored ones). Shard input JSONL by slice, run workers with distinct output dirs, merge `curated.jsonl` files downstream.

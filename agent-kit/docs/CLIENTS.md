@@ -36,12 +36,25 @@ A choice or score reply with no confidence is an error row, not a guess. The
 gateway's free tier returns HTTP 429 after about 4 requests. Those rows land in
 `errors.jsonl`; run again later with `--retry-errors`.
 
-The gateway refuses a large request with HTTP 503, not 413. Measured on
-2026-09-19 with `examples/trec/rubric.yaml`: 75 rows and 150 questions passed
-at 15,609 input tokens; 87 rows and 174 questions got 503. Jev counts the
-shared state once and about 100 tokens per question. Keep a batch under about
-15,000 input tokens. The SDK retries a 503 twice, so 1 refused batch costs 3
-requests of quota.
+Free-tier behavior observed on 2026-09-19 with `examples/trec/rubric.yaml`.
+Vercel and TypeSafe document none of it, and no reply carries a `Retry-After`
+header. The causes are not proven; the observations are.
+
+| Observed | Times |
+|---|---|
+| A request of 25, 60, 70, or 75 rows passed (75 rows: 150 questions, 15,609 input tokens, 0.9 s) | 8 |
+| A request of 100, 125, 300, or 1,000 rows got HTTP 503 | 4 of 4 |
+| A request of 60 to 87 rows got 503 when it came seconds after a large request | 3 |
+| A 60-row request got 503 as the first request after 10 quiet minutes. The 3 attempts before the wait were refused 100-row requests | 1 |
+| 3 requests of 60 rows, 90 seconds apart, passed; the 4th got HTTP 429 | 1 |
+| 4 small requests passed, then 429 | 2 |
+| 429 cleared after 10 quiet minutes. It did not clear after 3 minutes, or under a retry every 75 seconds | 5, 1, 1 |
+
+The pattern fits a token budget that refills slowly and that refused requests
+also drain, with a separate request count behind the 429. Jev counts the
+shared state once and about 100 tokens for each question. The SDK retries a
+503 or a 429 twice, so 1 refused batch costs 3 attempts. What worked:
+`--batch-size 60`, 3 requests 90 seconds apart, then 10 quiet minutes.
 
 ```sh
 export AI_GATEWAY_API_KEY="vck_..."

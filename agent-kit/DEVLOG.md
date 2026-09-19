@@ -39,6 +39,26 @@ Evidence: <commit / tag / gate run / screenshot>
 
 ---
 
+## 2026-09-19 — Batched rows, and learned the free tier's real limits
+
+The human pointed out that 1 Jev request can carry many questions. I built
+`--batch-size N`: N rows go out as 1 state, and each gate is asked once for
+each row, with the row named in the question. It works. 25 rows came back in
+0.4 seconds with a separate, correct answer for each row. The human then asked
+for 1,000 Hugging Face rows in 1 request. That failed: the gateway answered
+503. I spent quota finding out why and did not fully find out. Requests of
+100 rows and up always got 503; requests up to 75 rows passed. I called that a
+16k token cap, then a 60-row request got 503 after a quiet 10 minutes, and the
+theory fell. My probes were also confounded: 2 refused probes came seconds
+after a large success. The docs now list what I saw, not a cause. I
+also named a scratch script `bisect.py`, which shadowed the standard library
+and crashed the run. The working pattern is 60 rows, 3 requests, 90 seconds
+apart, then 10 quiet minutes. At 310 rows Jev had rejected 34 of 35 flipped
+labels and all 15 scrambled texts. It also rejected 2 source rows that contain
+part-of-speech tag debris, which I did not plant.
+
+Evidence: `01cb7c4`; `examples/trec/README.md`; `docs/CLIENTS.md` limits table.
+
 ## 2026-09-19 — Finished the first full live run
 
 I stopped the 75-second retry loop; its retries kept the gateway quota

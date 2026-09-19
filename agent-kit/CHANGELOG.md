@@ -6,7 +6,7 @@ Format: [Keep a Changelog](https://keepachangelog.com/) · Versioning: [SemVer](
 ## [Unreleased]
 ### Added
 - `run --batch-size N` sends N rows in 1 Jev request and asks every gate once per row. `run --timeout S` sets the wait for 1 call.
-- `examples/trec/rubric.yaml`: a 2-gate rubric for the Hugging Face set `SetFit/TREC-QC`.
+- `examples/trec/`: a rubric, `prepare.py`, `score.py`, and a results page for a 1,000-row run on the Hugging Face set `SetFit/TREC-QC`.
 - `run --gateway` and `check-jev --gateway` call live Jev through Vercel AI Gateway with `AI_GATEWAY_API_KEY`. Gates, thresholds, and output files are the same.
 - `run --concurrency N` runs N parallel Jev calls. Output files are written by one thread.
 - `run --retry-errors` re-evaluates ids that are only in `errors.jsonl`.

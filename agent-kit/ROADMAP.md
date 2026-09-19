@@ -64,6 +64,13 @@ provisional: true — the human has not ranked these yet.
 - **Scope guard:** No new gate kinds. Reword or re-threshold `duplicate_substance` and `is_ambiguous` only. Jev sees 1 row per call, so a gate must not ask about other rows.
 - **Status:** ready
 
+### 6. Pace requests
+- **Promise:** `run --min-interval S` starts each Jev call at least S seconds after the last one, and a test proves it with a fake clock.
+- **Evidence:** `tests/test_pipeline.py::test_min_interval_spaces_calls`; row for `--min-interval` in docs/CONFIGURATION.md; the TREC demo runs as 1 command.
+- **Use case:** docs/USE-CASES.md "Batch rows under a request quota".
+- **Scope guard:** A fixed interval only. No adaptive backoff, no reading of rate-limit headers (the gateway sends none).
+- **Status:** ready
+
 ## Later — candidates, not yet specced
 
 - Async client (`AsyncTypeSafeClient`) — higher throughput than threads once rate limits allow it.
@@ -87,6 +94,7 @@ provisional: true — the human has not ranked these yet.
 
 ## Queue changes
 
+- 2026-09-19 — Added item 6 from the 1,000-row live run. The free tier needs 90 seconds between large requests and a 10-minute wait after 3. I drove that with a scratch shell loop; the tool needs the flag. Item 3 (retry policy) gained weight too: the SDK's 2 retries turn 1 refused batch into 3 requests of quota.
 - 2026-09-19 — The human asked for many rows in 1 request, because the gateway free tier limits requests, not tokens. It shipped the same day, ahead of the queue. Promise: `run --batch-size N` evaluates N rows in 1 Jev call and writes the same verdicts as N calls. Use case: docs/USE-CASES.md "Batch rows under a request quota".
 - 2026-09-19 — The human asked for a Vercel AI Gateway client, because their Jev access is a gateway key. It shipped the same day, ahead of the queue. Promise: `run --gateway` evaluates the rubric through live Jev on the gateway and a rejected key stops the run. Use case: docs/USE-CASES.md "Run with a Vercel AI Gateway key". The 4 ready items keep their order.
 - 2026-09-19 — Added item 5 from the first full live run: `duplicate_substance` rejected clean rows (`t001` yes=0.75 against `max_yes: 0.35`). I queued it last; the human has not ranked the queue.
