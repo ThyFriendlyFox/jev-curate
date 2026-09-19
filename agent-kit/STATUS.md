@@ -14,8 +14,9 @@ behavior change. The weekly cycle (WEEKLY.md step 5) refreshes it.
 | Fail fast on bad key | ✅ | `test_auth_error_fails_fast` |
 | Live Jev call, direct (`TYPESAFE_API_KEY`) | 🚧 | gate `30_live_jev` runs it when the key is set. Not exercised: no TypeSafe key in this environment. |
 | Live Jev call, Vercel AI Gateway (`--gateway`) | ✅ | `tests/test_gateway_client.py`; gate `30_live_jev` green with `AI_GATEWAY_API_KEY` on 2026-09-19 (`ok.noul=0.990`) |
-| Full live run of `examples/corpus.jsonl` | 🚧 | 4 of 10 rows evaluated live on 2026-09-19. The gateway free tier returned 429 for the other 6. They wait in `errors.jsonl` for `--retry-errors`. |
-| CI (`.github/workflows/ci.yml` runs `./verify/verify.sh`) | 🚧 | Workflow committed 2026-09-19; first run pending on push |
+| Full live run of `examples/corpus.jsonl` | ✅ | 2026-09-19, `--gateway`: 10 of 10 rows evaluated, 2 kept, 8 rejected. It took 3 `--retry-errors` passes with 10-minute gaps because of the free-tier 429s. |
+| Example rubric thresholds against live Jev | 🚧 | `duplicate_substance` rejected 7 of 10 rows live, 3 of them on that gate alone (`t001` yes=0.75, `t003` 0.47, `t009` 0.41). The threshold was set against the mock. Queued as ROADMAP item 5. |
+| CI (`.github/workflows/ci.yml` runs `./verify/verify.sh`) | ✅ | Run 35445240451 passed on `master` at `94435b0` (2026-09-19) |
 | Release | ❌ | No tag yet. Version is 0.1.0 in `pyproject.toml`. |
 | Agent kit installed | ✅ | gate `40_agent_kit` |
 
@@ -25,5 +26,5 @@ States: ✅ done (gated) · 🚧 in progress · ❌ not started · 🧊 frozen/w
 
 - **Shipping:** between cycles. Week of 2026-09-19 shipped "Make the README true" and the Vercel AI Gateway client (see ROADMAP.md Shipped).
 - **Last release:** none — 0.1.0 is unreleased.
-- **Known red:** none. `./verify/verify.sh` green on 2026-09-19 (lint, build, 30 tests, 5 gates; `30_live_jev` skipped: gateway HTTP 429).
-- **Known limit:** the Vercel AI Gateway free tier allows about 4 Jev requests, then answers 429 for 10 minutes or more. It sends no `Retry-After` header.
+- **Known red:** none. `./verify/verify.sh` green on 2026-09-19 (lint, build, 30 tests, 5 gates; `30_live_jev` skipped: gateway HTTP 429). `check-jev --gateway` passed by hand at 09:22 on the merged code.
+- **Known limit:** the Vercel AI Gateway free tier allows about 4 Jev requests, then answers 429. A 10-minute wait restored it twice. It sends no `Retry-After` header.

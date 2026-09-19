@@ -39,6 +39,19 @@ Evidence: <commit / tag / gate run / screenshot>
 
 ---
 
+## 2026-09-19 — Finished the first full live run
+
+I stopped the 75-second retry loop; its retries kept the gateway quota
+tripped. A 10-minute wait restored the quota twice. `check-jev --gateway`
+passed on the merged code, and 2 more `--retry-errors` passes finished the
+corpus: 10 rows, 2 kept, 8 rejected, 0 rows left in error. CI ran on `master`
+for the first time and passed. The live numbers exposed a rubric fault. The
+`duplicate_substance` gate rejected 7 of 10 rows, 3 of them clean rows that
+failed no other gate. Its threshold was tuned against the mock, and the mock's
+numbers mean nothing. I did not tune it on 10 rows; it is ROADMAP item 5.
+
+Evidence: `.output/gateway1` (`stats`: curated 2, rejected 8, audit 10); CI run 35445240451.
+
 ## 2026-09-19 — Reached live Jev through Vercel AI Gateway
 
 The human holds a Vercel AI Gateway key, not a TypeSafe key. The gateway

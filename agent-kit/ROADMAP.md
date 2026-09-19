@@ -57,6 +57,13 @@ provisional: true — the human has not ranked these yet.
 - **Scope guard:** No UI, no labeling, no writing back.
 - **Status:** ready
 
+### 5. Calibrate the example rubric against live Jev
+- **Promise:** On `examples/corpus.jsonl` with live Jev, the example rubric keeps every row the corpus marks clean and rejects every row it marks bad, and `examples/README.md` records the live probabilities behind each threshold.
+- **Evidence:** A committed `examples/live-run.md` table of per-gate live probabilities; gate `20_mock_run` still green; the mock's heuristics updated only if the gate names change.
+- **Use case:** docs/USE-CASES.md "Filter a labeled corpus".
+- **Scope guard:** No new gate kinds. Reword or re-threshold `duplicate_substance` and `is_ambiguous` only. Jev sees 1 row per call, so a gate must not ask about other rows.
+- **Status:** ready
+
 ## Later — candidates, not yet specced
 
 - Async client (`AsyncTypeSafeClient`) — higher throughput than threads once rate limits allow it.
@@ -80,5 +87,6 @@ provisional: true — the human has not ranked these yet.
 ## Queue changes
 
 - 2026-09-19 — The human asked for a Vercel AI Gateway client, because their Jev access is a gateway key. It shipped the same day, ahead of the queue. Promise: `run --gateway` evaluates the rubric through live Jev on the gateway and a rejected key stops the run. Use case: docs/USE-CASES.md "Run with a Vercel AI Gateway key". The 4 ready items keep their order.
+- 2026-09-19 — Added item 5 from the first full live run: `duplicate_substance` rejected clean rows (`t001` yes=0.75 against `max_yes: 0.35`). I queued it last; the human has not ranked the queue.
 - 2026-09-19 — The first live run showed the gateway free tier returns 429 after about 4 requests. This raises the value of item 3 (retry policy). I did not reorder; the human has not ranked the queue.
 - 2026-09-19 — Queue seeded during SETUP.md from README gaps (`merge`, cost, retry policy, sample). Provisional until the human ranks it.
