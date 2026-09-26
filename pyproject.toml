@@ -12,7 +12,7 @@ requires-python = ">=3.10"
 authors = [{ name = "jev-curate contributors" }]
 keywords = ["jev", "typesafe", "data-curation", "filtering", "training-data"]
 dependencies = [
-    "typesafe-sdk>=0.7.0",
+    "typesafe-sdk>=0.7.1",
     "httpx2>=2.0.0",
     "pyyaml>=6.0",
     "click>=8.1",
